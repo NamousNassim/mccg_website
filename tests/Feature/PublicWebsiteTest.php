@@ -9,6 +9,7 @@ use App\Models\ContactMessage;
 use App\Models\Service;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Mail;
 use RuntimeException;
 use Tests\TestCase;
@@ -28,6 +29,18 @@ class PublicWebsiteTest extends TestCase
         foreach (['/', '/a-propos', '/services', '/articles', '/contact', '/confidentialite', '/conditions', '/sitemap.xml', '/robots.txt'] as $uri) {
             $this->get($uri)->assertOk();
         }
+    }
+
+    public function test_shared_mobile_navigation_and_footer_render(): void
+    {
+        $this->get(route('accueil'))
+            ->assertOk()
+            ->assertSee('id="menu-toggle"', false)
+            ->assertSee('aria-controls="mobile-menu"', false)
+            ->assertSee('id="mobile-menu"', false)
+            ->assertSee('Nous consulter')
+            ->assertSee('Confidentialité')
+            ->assertSee('Conditions');
     }
 
     public function test_published_content_is_publicly_accessible(): void
@@ -65,6 +78,58 @@ class PublicWebsiteTest extends TestCase
         $contactMessage = ContactMessage::where('email', 'samira@example.com')->firstOrFail();
         $this->assertStringContainsString('Samira Alaoui', (new NewContactMessageMail($contactMessage))->render());
         $this->assertStringContainsString('Nous vous confirmons', (new ContactMessageReceivedMail($contactMessage))->render());
+    }
+
+    public function test_contact_page_displays_configured_business_details_and_structured_data(): void
+    {
+        $response = $this->get(route('contact'));
+
+        $response->assertOk()
+            ->assertSee('05 24 43 83 70')
+            ->assertSee('majd.chraibi@gmail.com')
+            ->assertSee('92, Bd Zerktouni, Appt 6, 2ème étage, Guéliz, Marrakech')
+            ->assertSee('Casablanca, Dubai')
+            ->assertSee('Ouvrir dans Google Maps')
+            ->assertSee('Carte du bureau MCCG à Marrakech')
+            ->assertSee('Carte du bureau MCCG à Casablanca')
+            ->assertSee('Carte du bureau MCCG à Dubai')
+            ->assertSee('data-office-carousel', false)
+            ->assertSee('"telephone":"05 24 43 83 70"', false)
+            ->assertSee('"email":"majd.chraibi@gmail.com"', false)
+            ->assertSee('"streetAddress":"92, Bd Zerktouni, Appt 6, 2ème étage"', false)
+            ->assertSee('"addressLocality":"Marrakech"', false);
+    }
+
+    public function test_contact_page_and_footer_work_without_google_maps_urls(): void
+    {
+        config()->set('mccg.google_maps_url');
+        config()->set('mccg.google_maps_embed_url');
+        config()->set('mccg.office_locations', [[
+            'city' => 'Marrakech',
+            'address' => config('mccg.address'),
+            'maps_url' => null,
+            'embed_url' => null,
+        ]]);
+
+        $this->get(route('contact'))
+            ->assertOk()
+            ->assertSee('MCCG Marrakech')
+            ->assertSee('Ouvrir dans Google Maps')
+            ->assertSee('05 24 43 83 70')
+            ->assertSee('majd.chraibi@gmail.com')
+            ->assertSee('Autres bureaux');
+    }
+
+    public function test_footer_displays_configured_contact_details(): void
+    {
+        $footer = Blade::render('<x-footer />');
+
+        $this->assertStringContainsString('05 24 43 83 70', $footer);
+        $this->assertStringContainsString('majd.chraibi@gmail.com', $footer);
+        $this->assertStringContainsString('92, Bd Zerktouni, Appt 6, 2ème étage, Guéliz, Marrakech', $footer);
+        $this->assertStringContainsString('Casablanca, Dubai', $footer);
+        $this->assertStringContainsString('https://www.linkedin.com/in/majdchraibi', $footer);
+        $this->assertStringContainsString('https://www.instagram.com/mccg.consulting', $footer);
     }
 
     public function test_admin_login_is_available(): void

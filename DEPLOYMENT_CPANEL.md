@@ -11,6 +11,7 @@
 
 1. Créer la base et l’utilisateur MySQL depuis cPanel, puis leur attribuer tous les privilèges.
 2. Copier `.env.example` vers `.env` et renseigner `APP_URL`, `DB_*`, les identifiants administrateur et la configuration mail.
+   Pour le site MCCG, utiliser `APP_URL=https://www.mc-cg.com`.
    Renseigner également `CONTACT_NOTIFICATION_EMAIL`. Si cette valeur reste vide, MCCG utilise `MAIL_FROM_ADDRESS`.
 3. Placer l’application hors de `public_html` si l’hébergement le permet, puis configurer la racine du domaine vers `mccg_website/public`.
 4. Exécuter depuis le terminal cPanel :

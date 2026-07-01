@@ -1,6 +1,6 @@
 @props(['service'])
-<article class="reveal hover-lift group flex h-full flex-col rounded-xl border border-slate-200 bg-white p-7 shadow-sm shadow-slate-900/[.02] hover:border-coral/40 hover:shadow-lg hover:shadow-slate-900/[.05]" data-reveal>
-    <div class="service-icon mb-7 grid size-12 place-items-center rounded-lg border border-coral/20 text-coral">
+<article class="reveal hover-lift group flex h-full flex-col rounded-xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-900/[.02] hover:border-coral/40 hover:shadow-lg hover:shadow-slate-900/[.05] sm:p-7" data-reveal>
+    <div class="service-icon mb-6 grid size-11 place-items-center rounded-lg border border-coral/20 text-coral sm:mb-7 sm:size-12">
         @switch($service->icon)
             @case('calculator')
                 <svg class="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2" stroke-width="1.5"/><path stroke-linecap="round" stroke-width="1.5" d="M8 7h8v3H8zM8.5 14h.01m3.49 0h.01m3.49 0h.01M8.5 17.5h.01m3.49 0h.01m3.49 0h.01"/></svg>

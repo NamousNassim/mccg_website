@@ -29,9 +29,16 @@
         '@context' => 'https://schema.org', '@type' => ['LocalBusiness', 'AccountingService'],
         'name' => 'MCCG', 'url' => url('/'), 'logo' => asset('images/logo.png'),
         'description' => 'Cabinet marocain d’expertise comptable, fiscalité, audit, gestion sociale, conseil juridique et accompagnement stratégique.',
-        'address' => ['@type' => 'PostalAddress', 'addressCountry' => 'MA'],
+        'address' => [
+            '@type' => 'PostalAddress',
+            'streetAddress' => config('mccg.street_address'),
+            'addressLocality' => config('mccg.city'),
+            'addressRegion' => config('mccg.region'),
+            'addressCountry' => 'MA',
+        ],
         'areaServed' => ['@type' => 'Country', 'name' => 'Maroc'],
-        'email' => 'contact@mccg.ma', 'telephone' => '+212 5 00 00 00 00',
+        'email' => config('mccg.email'), 'telephone' => config('mccg.phone'),
+        'sameAs' => array_values(array_filter([config('mccg.linkedin_url'), config('mccg.instagram_url')])),
         'priceRange' => '$$',
     ], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) !!}</script>
     @stack('structured-data')

@@ -651,6 +651,8 @@ Current result: **11 tests passing, 64 assertions**.
 
 The application is designed for a cPanel deployment with the web root pointing to Laravel's `public` directory.
 
+The production domain is `https://www.mc-cg.com`; the production `.env` must therefore use `APP_URL=https://www.mc-cg.com`.
+
 The complete production procedure is documented in [DEPLOYMENT_CPANEL.md](DEPLOYMENT_CPANEL.md).
 
 The main production steps are:
