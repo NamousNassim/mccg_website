@@ -746,6 +746,10 @@ Current result: **21 tests passing, 158 assertions**.
 
 The application is designed for a cPanel deployment with the web root pointing to Laravel's `public` directory.
 
+The recommended split cPanel layout keeps the Git repository in `/home/USERNAME/mccg_backend` and publishes the contents of `public/` to `/home/USERNAME/public_html/mccg`. The domain document root points to `public_html/mccg`, while its customized `index.php` loads Laravel from the backend directory.
+
+`public/build` is intentionally tracked in Git so a production pull includes the compiled Vite assets without requiring Node.js on cPanel.
+
 The production domain is `https://www.mc-cg.com`; the production `.env` must therefore use `APP_URL=https://www.mc-cg.com`.
 
 The complete production procedure is documented in [DEPLOYMENT_CPANEL.md](DEPLOYMENT_CPANEL.md).

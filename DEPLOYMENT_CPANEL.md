@@ -8,12 +8,37 @@
 - Le domaine doit pointer vers le dossier Laravel `public`.
 - Une tâche cron ou un gestionnaire de processus doit être disponible pour la file d’attente.
 
+## Arborescence recommandée
+
+Pour conserver le code Laravel hors de la racine web, utiliser cette structure :
+
+```text
+/home/USERNAME/
+├── mccg_backend/              # Dépôt Git Laravel complet
+│   ├── app/
+│   ├── bootstrap/
+│   ├── config/
+│   ├── public/                # Source des fichiers publics
+│   ├── storage/
+│   └── vendor/
+└── public_html/
+    └── mccg/                  # Racine web configurée dans cPanel
+        ├── build/             # Assets Vite suivis dans Git
+        ├── images/
+        ├── index.php
+        └── .htaccess
+```
+
+Le `git pull` s’exécute dans `/home/USERNAME/mccg_backend`. Le dossier `public/build` est volontairement suivi dans Git afin que les assets compilés soient disponibles même lorsque Node.js n’est pas installé sur cPanel.
+
+Configurer le document root du domaine `www.mc-cg.com` sur `/home/USERNAME/public_html/mccg`. Dans ce cas, `APP_URL` reste `https://www.mc-cg.com` sans suffixe `/mccg`.
+
 ## Première mise en ligne
 
 1. Créer la base et l’utilisateur MySQL depuis cPanel, puis leur attribuer les privilèges requis.
 2. Copier `.env.example` vers `.env` et configurer `APP_URL`, `DB_*`, SMTP, `CONTACT_NOTIFICATION_EMAIL` et les identifiants administrateur.
 3. Utiliser `APP_URL=https://www.mc-cg.com`, `APP_ENV=production` et `APP_DEBUG=false`.
-4. Placer l’application hors de `public_html` si l’hébergement le permet, puis faire pointer la racine du domaine vers `mccg_website/public`.
+4. Cloner le dépôt dans `/home/USERNAME/mccg_backend`.
 5. Exécuter depuis le terminal cPanel :
 
 ```bash
@@ -22,26 +47,55 @@ php artisan key:generate --force
 php artisan migrate --force
 php artisan db:seed --force
 php artisan storage:link
-npm ci
-npm run build
 php artisan optimize
+```
+
+6. Copier le contenu du dossier public vers la racine web :
+
+```bash
+cp -a /home/USERNAME/mccg_backend/public/. /home/USERNAME/public_html/mccg/
+```
+
+7. Dans `/home/USERNAME/public_html/mccg/index.php`, remplacer les trois chemins relatifs par les chemins absolus du backend :
+
+```php
+if (file_exists($maintenance = '/home/USERNAME/mccg_backend/storage/framework/maintenance.php')) {
+    require $maintenance;
+}
+
+require '/home/USERNAME/mccg_backend/vendor/autoload.php';
+
+$app = require_once '/home/USERNAME/mccg_backend/bootstrap/app.php';
+```
+
+Ne jamais copier `.env`, `vendor`, `app`, `config`, `database` ou `storage` dans `public_html/mccg`.
+
+8. Créer le lien public des fichiers téléversés vers le backend :
+
+```bash
+ln -s /home/USERNAME/mccg_backend/storage/app/public /home/USERNAME/public_html/mccg/storage
 ```
 
 Générer `APP_KEY` et exécuter `db:seed` uniquement lors de la première installation. Sur les déploiements suivants, conserver la clé existante et appliquer seulement les nouvelles migrations.
 
-Si Node.js n’est pas disponible sur cPanel, produire `public/build` localement avec `npm ci && npm run build`, puis téléverser ce dossier avec la version déployée.
+Si Node.js n’est pas disponible sur cPanel, utiliser directement le dossier `public/build` suivi dans Git. Avant chaque commit de mise en production qui modifie CSS ou JavaScript, exécuter localement `npm ci && npm run build` et inclure les nouveaux fichiers compilés dans le commit.
 
 ## Déploiements suivants
 
 ```bash
+cd /home/USERNAME/mccg_backend
+git pull
 composer install --no-dev --optimize-autoloader
 php artisan optimize:clear
 php artisan migrate --force
 php artisan queue:restart
 php artisan optimize
+rsync -a --delete --exclude=index.php --exclude=storage public/ /home/USERNAME/public_html/mccg/
 ```
 
-Vérifier que `public/build` correspond au code déployé.
+La synchronisation exclut volontairement le `index.php` public personnalisé et le lien `storage`. Vérifier après le déploiement que `public_html/mccg/storage` pointe toujours vers `mccg_backend/storage/app/public`.
+
+Vérifier que `public_html/mccg/build/manifest.json` correspond au code déployé.
 
 ## E-mails et file d’attente
 
