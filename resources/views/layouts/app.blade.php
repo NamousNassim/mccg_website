@@ -1,8 +1,9 @@
 @php
     $pageSeo = $seo ?? null;
-    $title = $seoTitle ?? ($pageSeo?->meta_title ?? 'MCCG | Cabinet d’expertise comptable et conseil au Maroc');
-    $description = $seoDescription ?? ($pageSeo?->meta_description ?? 'MCCG accompagne les entreprises au Maroc en expertise comptable, fiscalité, audit, gestion sociale, conseil juridique et accompagnement stratégique.');
+    $title = $seoTitle ?? ($pageSeo?->meta_title ?? 'MCCG | Cabinet de conseil comptable et fiscal au Maroc');
+    $description = $seoDescription ?? ($pageSeo?->meta_description ?? 'MCCG accompagne les entreprises au Maroc en tenue comptable, fiscalité, gestion sociale, conseil juridique et accompagnement administratif.');
     $ogImage = $seoImage ?? ($pageSeo?->og_image ? asset('storage/'.$pageSeo->og_image) : asset('images/logo.png'));
+    $schemaContext = '@'.'context';
 @endphp
 <!DOCTYPE html>
 <html lang="fr" class="scroll-smooth">
@@ -26,9 +27,9 @@
     <link rel="icon" href="{{ asset('favicon.ico') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script type="application/ld+json">{!! json_encode([
-        '@context' => 'https://schema.org', '@type' => ['LocalBusiness', 'AccountingService'],
+        $schemaContext => 'https://schema.org', '@type' => ['LocalBusiness', 'ProfessionalService'],
         'name' => 'MCCG', 'url' => url('/'), 'logo' => asset('images/logo.png'),
-        'description' => 'Cabinet marocain d’expertise comptable, fiscalité, audit, gestion sociale, conseil juridique et accompagnement stratégique.',
+        'description' => 'MCCG est un cabinet de conseil comptable, fiscal, social et administratif basé à Marrakech, accompagnant les entreprises et entrepreneurs au Maroc.',
         'address' => [
             '@type' => 'PostalAddress',
             'streetAddress' => config('mccg.street_address'),

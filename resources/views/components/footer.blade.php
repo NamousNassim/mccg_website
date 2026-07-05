@@ -7,7 +7,7 @@
     <div class="container-site grid gap-10 py-12 sm:py-16 md:grid-cols-2 md:gap-12 lg:grid-cols-4" data-stagger>
         <div class="reveal lg:col-span-2" data-reveal>
             <div class="mb-5 h-14 w-[200px] overflow-hidden rounded bg-white"><img src="{{ asset('images/logo.png') }}" alt="MCCG" class="w-[210px] max-w-none -translate-x-1 -translate-y-[27px]" width="310" height="163" loading="lazy"></div>
-            <p class="max-w-xl leading-7">MCCG accompagne les entreprises et entrepreneurs au Maroc et à l’international en comptabilité, fiscalité, audit, gestion sociale et conseil.</p>
+            <p class="max-w-xl leading-7">MCCG accompagne les entreprises et entrepreneurs au Maroc et à l’international en tenue comptable, fiscalité, audit interne, gestion sociale et conseil.</p>
             <div class="mt-5 flex flex-wrap gap-2 text-sm font-semibold sm:mt-6">
                 <a class="inline-flex min-h-11 items-center rounded-md px-2 hover:bg-white/5 hover:text-coral" href="{{ config('mccg.linkedin_url') }}" target="_blank" rel="noopener noreferrer">LinkedIn <span aria-hidden="true">↗</span></a>
                 <a class="inline-flex min-h-11 items-center rounded-md px-2 hover:bg-white/5 hover:text-coral" href="{{ config('mccg.instagram_url') }}" target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span></a>
@@ -24,5 +24,6 @@
             </div>
         </div>
     </div>
+    <div class="border-t border-white/10"><p class="container-site py-5 text-xs leading-6 text-white/50">MCCG propose des services d’accompagnement comptable, fiscal, social et administratif. Les prestations réglementées sont réalisées uniquement lorsqu’elles sont légalement autorisées ou en collaboration avec des professionnels habilités.</p></div>
     <div class="border-t border-white/10"><div class="container-site flex flex-col gap-3 py-5 text-xs sm:flex-row sm:items-center sm:justify-between sm:py-6"><p>© {{ date('Y') }} MCCG. Tous droits réservés.</p><div class="flex flex-wrap gap-x-5 gap-y-2"><a class="inline-flex min-h-11 items-center hover:text-coral sm:min-h-0" href="{{ route('confidentialite') }}">Confidentialité</a><a class="inline-flex min-h-11 items-center hover:text-coral sm:min-h-0" href="{{ route('conditions') }}">Conditions</a></div></div></div>
 </footer>

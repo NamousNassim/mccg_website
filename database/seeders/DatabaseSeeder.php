@@ -23,9 +23,9 @@ class DatabaseSeeder extends Seeder
         );
 
         foreach ([
-            ['Accueil', 'accueil', 'MCCG | Cabinet d’expertise comptable et conseil au Maroc', 'MCCG accompagne les entreprises au Maroc en expertise comptable, fiscalité, audit, gestion sociale, conseil juridique et accompagnement stratégique.'],
+            ['Accueil', 'accueil', 'MCCG | Cabinet de conseil comptable et fiscal au Maroc', 'MCCG accompagne les entreprises au Maroc en tenue comptable, fiscalité, gestion sociale, conseil juridique et accompagnement administratif.'],
             ['À propos', 'a-propos', 'À propos de MCCG — Votre partenaire de confiance', 'Découvrez MCCG, cabinet de conseil marocain engagé aux côtés des dirigeants et entreprises.'],
-            ['Services', 'services', 'Nos services — Comptabilité, fiscalité, audit & conseil', 'Une expertise complète en comptabilité, fiscalité, audit, paie et accompagnement des entreprises au Maroc.'],
+            ['Services', 'services', 'Services comptables, fiscaux et sociaux | MCCG', 'Découvrez les services MCCG : tenue comptable, conseil fiscal, gestion sociale, paie, accompagnement administratif et conseil aux entreprises.'],
             ['Articles', 'articles', 'Éclairages & actualités — MCCG', 'Analyses pratiques sur la fiscalité, la gestion, la comptabilité et la vie des entreprises au Maroc.'],
             ['Contact', 'contact', 'Contacter MCCG — Parlons de vos enjeux', 'Échangez avec nos consultants et obtenez un accompagnement adapté aux enjeux de votre entreprise.'],
             ['Confidentialité', 'confidentialite', 'Politique de confidentialité — MCCG', 'Politique de confidentialité et traitement des données personnelles par MCCG.'],
@@ -35,11 +35,11 @@ class DatabaseSeeder extends Seeder
         }
 
         $services = [
-            ['Expertise comptable', 'tenue-comptable', 'Une information comptable fiable pour sécuriser vos obligations et piloter votre activité.', 'De la tenue des comptes à la production des états de synthèse, MCCG fiabilise votre information financière et vous apporte une lecture claire de vos chiffres.', 'calculator'],
-            ['Fiscalité', 'conseil-fiscal', 'Anticipez vos obligations et maîtrisez durablement vos risques fiscaux.', 'Nous vous accompagnons dans vos déclarations, vos choix structurants, vos opérations exceptionnelles et vos relations avec l’administration fiscale marocaine.', 'scale'],
-            ['Audit & Commissariat aux comptes', 'audit-controle', 'Renforcez la confiance dans vos comptes, vos procédures et votre gouvernance.', 'Nos missions d’audit et de commissariat aux comptes identifient les risques, fiabilisent vos processus et renforcent la confiance de vos partenaires.', 'check'],
+            ['Tenue comptable', 'tenue-comptable', 'Une information comptable fiable pour sécuriser vos obligations et piloter votre activité.', 'De la tenue des comptes au suivi des états de synthèse, MCCG organise votre information financière et vous apporte une lecture claire de vos chiffres.', 'calculator'],
+            ['Conseil fiscal', 'conseil-fiscal', 'Anticipez vos obligations et maîtrisez durablement vos risques fiscaux.', 'Nous vous accompagnons dans vos déclarations, vos choix structurants, vos opérations exceptionnelles et vos relations avec l’administration fiscale marocaine.', 'scale'],
+            ['Audit interne & revue comptable', 'audit-controle', 'Renforcez la fiabilité de vos processus, de vos comptes et de votre gouvernance.', 'Nos missions d’audit interne et de revue comptable identifient les risques, améliorent vos processus et éclairent le pilotage de votre entreprise.', 'check'],
             ['Gestion sociale & RH', 'paie-social', 'Une gestion sociale précise, confidentielle et conforme à vos obligations.', 'Bulletins de paie, déclarations sociales, contrats et conseil RH : nous simplifions votre quotidien tout en sécurisant vos obligations.', 'users'],
-            ['Conseil juridique', 'creation-entreprise', 'Sécurisez vos décisions et donnez à vos projets le cadre juridique adapté.', 'Choix de la forme, constitution, secrétariat juridique et opérations sur le capital : nous structurons chaque étape de la vie de votre entreprise.', 'building'],
+            ['Conseil juridique et administratif', 'creation-entreprise', 'Sécurisez vos décisions et donnez à vos projets le cadre juridique et administratif adapté.', 'Création d’entreprise, formalités et accompagnement administratif : nous vous conseillons dans la limite des prestations autorisées et mobilisons, lorsque nécessaire, des professionnels habilités.', 'building'],
             ['Accompagnement des entreprises', 'conseil-gestion', 'Des indicateurs clairs et un conseil stratégique pour décider avec confiance.', 'Budgets, tableaux de bord, analyse de rentabilité et optimisation de trésorerie : nos consultants éclairent vos décisions stratégiques.', 'chart'],
         ];
         foreach ($services as [$title, $slug, $short, $content, $icon]) {

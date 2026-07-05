@@ -43,6 +43,42 @@ class PublicWebsiteTest extends TestCase
             ->assertSee('Conditions');
     }
 
+    public function test_main_marketing_pages_do_not_claim_regulated_accounting_status(): void
+    {
+        $riskyClaims = [
+            'cabinet d’expertise comptable',
+            'expert-comptable',
+            'commissariat aux comptes',
+            'certification des comptes',
+            'audit légal',
+            'membre de l’ordre',
+        ];
+
+        foreach (['/', '/a-propos', '/services', '/contact'] as $uri) {
+            $content = mb_strtolower($this->get($uri)->assertOk()->getContent());
+
+            foreach ($riskyClaims as $claim) {
+                $this->assertStringNotContainsString($claim, $content, "La page {$uri} contient l’allégation réglementée « {$claim} ».");
+            }
+        }
+    }
+
+    public function test_public_copy_uses_compliant_positioning_and_disclaimer(): void
+    {
+        $this->get(route('accueil'))
+            ->assertSeeText('Votre partenaire de confiance en conseil comptable, fiscal et social')
+            ->assertSee('MCCG | Cabinet de conseil comptable et fiscal au Maroc', false)
+            ->assertSee('"@context":"https://schema.org"', false)
+            ->assertSee('"@type":["LocalBusiness","ProfessionalService"]', false)
+            ->assertSee('Les prestations réglementées sont réalisées uniquement lorsqu’elles sont légalement autorisées');
+
+        $this->get(route('services.index'))
+            ->assertSee('Tenue comptable')
+            ->assertSee('Conseil fiscal')
+            ->assertSee('Audit interne &amp; revue comptable', false)
+            ->assertSee('Conseil juridique et administratif');
+    }
+
     public function test_published_content_is_publicly_accessible(): void
     {
         $service = Service::where('is_active', true)->first();
@@ -55,7 +91,8 @@ class PublicWebsiteTest extends TestCase
         $this->get(route('articles.show', $article))
             ->assertOk()
             ->assertSee($article->meta_title, false)
-            ->assertSee('application/ld+json', false);
+            ->assertSee('application/ld+json', false)
+            ->assertSee('"@context":"https://schema.org"', false);
         $this->get('/sitemap.xml')
             ->assertSee(route('services.show', $service), false)
             ->assertSee(route('articles.show', $article), false);
