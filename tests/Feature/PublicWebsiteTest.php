@@ -128,13 +128,77 @@ class PublicWebsiteTest extends TestCase
             ->assertSee('Casablanca, Dubai')
             ->assertSee('Ouvrir dans Google Maps')
             ->assertSee('Carte du bureau MCCG à Marrakech')
-            ->assertSee('Carte du bureau MCCG à Casablanca')
             ->assertSee('Carte du bureau MCCG à Dubai')
+            ->assertSee('Bureau Casablanca')
+            ->assertSee('Adresse à confirmer')
+            ->assertSee('data-map-fallback="Casablanca"', false)
+            ->assertDontSee('Carte du bureau MCCG à Casablanca')
             ->assertSee('data-office-carousel', false)
             ->assertSee('"telephone":"05 24 43 83 70"', false)
             ->assertSee('"email":"majd.chraibi@gmail.com"', false)
             ->assertSee('"streetAddress":"92, Bd Zerktouni, Appt 6, 2ème étage"', false)
             ->assertSee('"addressLocality":"Marrakech"', false);
+
+        $this->assertSame(2, substr_count($response->getContent(), '<iframe'));
+    }
+
+    public function test_analytics_are_not_rendered_without_configuration(): void
+    {
+        config()->set('mccg.analytics_provider');
+        config()->set('mccg.ga_id');
+        config()->set('mccg.plausible_domain');
+
+        $this->get(route('accueil'))
+            ->assertOk()
+            ->assertDontSee('googletagmanager.com', false)
+            ->assertDontSee('plausible.io/js/script.js', false)
+            ->assertDontSee('data-cookie-notice', false);
+    }
+
+    public function test_google_analytics_and_cookie_notice_require_provider_and_id(): void
+    {
+        config()->set('mccg.analytics_provider', 'google');
+        config()->set('mccg.ga_id', 'G-MCCG123456');
+        config()->set('mccg.plausible_domain', 'wrong.example');
+
+        $this->get(route('accueil'))
+            ->assertOk()
+            ->assertSee('googletagmanager.com/gtag/js', false)
+            ->assertSee('G-MCCG123456', false)
+            ->assertSee('data-mccg-google-bootstrap', false)
+            ->assertSee('data-cookie-notice', false)
+            ->assertDontSee('plausible.io/js/script.js', false);
+    }
+
+    public function test_incomplete_analytics_configuration_renders_nothing(): void
+    {
+        config()->set('mccg.analytics_provider', 'google');
+        config()->set('mccg.ga_id');
+
+        $this->get(route('accueil'))
+            ->assertDontSee('googletagmanager.com', false)
+            ->assertDontSee('data-cookie-notice', false);
+
+        config()->set('mccg.analytics_provider', 'plausible');
+        config()->set('mccg.plausible_domain');
+
+        $this->get(route('accueil'))
+            ->assertDontSee('plausible.io/js/script.js', false);
+    }
+
+    public function test_plausible_analytics_requires_provider_and_domain(): void
+    {
+        config()->set('mccg.analytics_provider', 'plausible');
+        config()->set('mccg.plausible_domain', 'www.mc-cg.com');
+        config()->set('mccg.ga_id', 'G-WRONG');
+
+        $this->get(route('accueil'))
+            ->assertOk()
+            ->assertSee('src="https://plausible.io/js/script.js"', false)
+            ->assertSee('data-domain="www.mc-cg.com"', false)
+            ->assertSee('data-mccg-plausible', false)
+            ->assertDontSee('googletagmanager.com', false)
+            ->assertDontSee('data-cookie-notice', false);
     }
 
     public function test_contact_page_and_footer_work_without_google_maps_urls(): void

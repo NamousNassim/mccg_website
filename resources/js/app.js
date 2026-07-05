@@ -154,3 +154,39 @@ document.querySelectorAll('[data-office-carousel]').forEach((carousel) => {
     next?.addEventListener('click', () => showOffice(activeIndex + 1));
     showOffice(0);
 });
+
+const cookieNotice = document.querySelector('[data-cookie-notice]');
+
+if (cookieNotice) {
+    const hideCookieNotice = () => {
+        cookieNotice.hidden = true;
+    };
+
+    let consent = null;
+    try {
+        consent = window.localStorage.getItem('mccg_analytics_consent');
+    } catch (_) {
+        // The notice remains available when browser storage is restricted.
+    }
+
+    if (!consent) cookieNotice.hidden = false;
+
+    cookieNotice.querySelector('[data-cookie-accept]')?.addEventListener('click', () => {
+        try {
+            window.localStorage.setItem('mccg_analytics_consent', 'accepted');
+        } catch (_) {
+            // Consent still applies for the current page when storage is unavailable.
+        }
+        window.mccgLoadGoogleAnalytics?.();
+        hideCookieNotice();
+    });
+
+    cookieNotice.querySelector('[data-cookie-reject]')?.addEventListener('click', () => {
+        try {
+            window.localStorage.setItem('mccg_analytics_consent', 'declined');
+        } catch (_) {
+            // Tracking stays disabled even when the preference cannot be persisted.
+        }
+        hideCookieNotice();
+    });
+}

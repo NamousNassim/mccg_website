@@ -1,6 +1,6 @@
 # MCCG Website
 
-Corporate website and content administration system for **MCCG**, a Moroccan accounting and consulting firm.
+Corporate website and content administration system for **MCCG**, a Moroccan cabinet providing accounting support and business consulting services.
 
 The application provides a French public website, an authenticated Filament administration panel, article and service publishing, page-level SEO management, contact lead tracking, a dynamic sitemap, and a cPanel-compatible deployment workflow.
 
@@ -21,6 +21,42 @@ The application is currently functional and includes:
 - Lightweight viewport animations with reduced-motion support.
 - Automated feature tests for public and administrative routes.
 - Production assets compiled by Vite.
+- Real MCCG contact details, social profiles, opening hours, and office locations.
+- An accessible three-city Google Maps carousel for Marrakech, Casablanca, and Dubai.
+- Mobile and tablet layouts optimized from 360px through 1024px.
+- Legally cautious service and marketing wording for regulated professional activities in Morocco.
+- A multi-resolution MCCG favicon generated from the official coral brand mark.
+
+### 1.1 Application snapshot — 5 July 2026
+
+| Area | Current state |
+|---|---|
+| Public website | Complete French website with 9 public content pages, service/article detail routes, sitemap, and robots response |
+| Administration | Filament panel at `/admin` with users, articles, categories, services, page SEO, and contact messages |
+| Content | Six seeded services, one seeded category, one sample published article, database-managed articles and page SEO |
+| Contact | Validated and throttled form, persistent lead storage, two queued email notifications, Filament status tracking |
+| Business details | Centralized in `config/mccg.php` with environment overrides |
+| Office maps | Interactive carousel with city tabs, arrow controls, embedded maps, external Google Maps links, and missing-map fallbacks |
+| Responsive design | Phone-first layouts for 360–600px, two-column tablet layouts where appropriate, desktop preserved at 1024px+ |
+| Accessibility | Labeled forms, keyboard-aware mobile menu and map tabs, 44px controls, focus states, reduced-motion handling |
+| SEO | Database-managed page metadata, canonical and Open Graph tags, valid LocalBusiness/ProfessionalService and Article JSON-LD |
+| Legal positioning | Public wording uses accounting-support, fiscal, social, administrative, internal-audit, and business-advisory terminology |
+| Automated verification | 21 PHPUnit tests passing with 158 assertions |
+| Production domain | `https://www.mc-cg.com` |
+
+### 1.2 Current MCCG business information
+
+| Detail | Value |
+|---|---|
+| Telephone | `05 24 43 83 70` |
+| Email | `majd.chraibi@gmail.com` |
+| Main office | 92, Bd Zerktouni, Appt 6, 2ème étage, Guéliz, Marrakech |
+| Other offices | Casablanca and Dubai |
+| Opening hours | Monday–Friday, 09:00–18:00 |
+| LinkedIn | `https://www.linkedin.com/in/majdchraibi` |
+| Instagram | `https://www.instagram.com/mccg.consulting` |
+
+The Casablanca map is deliberately disabled until verified coordinates are available. Visitors see “Bureau Casablanca” and “Adresse à confirmer”; no iframe or Dubai coordinates are rendered for that slide.
 
 ## 2. Technology stack
 
@@ -57,13 +93,14 @@ database/
 
 public/
 ├── build/                     # Compiled production assets
+├── favicon.ico                # Multi-resolution MCCG browser icon
 └── images/
     ├── logo.png               # Official MCCG logo
     └── hero-mccg.png          # Homepage corporate hero image
 
 resources/
 ├── css/app.css                # Brand system, components, and animations
-├── js/app.js                  # Menu, reveals, counters, and parallax
+├── js/app.js                  # Menu, reveals, counters, parallax, and office carousel
 └── views/
     ├── articles/
     ├── components/
@@ -73,6 +110,7 @@ resources/
     └── sitemap.blade.php
 
 routes/web.php                 # Public application routes
+config/mccg.php                # Business details and office-map configuration
 tests/Feature/                 # End-to-end HTTP feature tests
 DEPLOYMENT_CPANEL.md           # cPanel deployment procedure
 ```
@@ -382,7 +420,7 @@ Production hosting should still enable `intl`.
 - Canonical URLs.
 - Open Graph metadata.
 - Twitter card metadata.
-- MCCG LocalBusiness and AccountingService JSON-LD.
+- MCCG LocalBusiness and ProfessionalService JSON-LD.
 - Vite CSS and JavaScript assets.
 - Shared navbar and footer components.
 
@@ -396,7 +434,7 @@ Production hosting should still enable `intl`.
 | `services/show.blade.php` | Individual service content and conversion CTA |
 | `articles/index.blade.php` | Category filters and article archive |
 | `articles/show.blade.php` | Article content, author, Article JSON-LD, related articles |
-| `pages/contact.blade.php` | Contact information and reusable form |
+| `pages/contact.blade.php` | Contact information, reusable form, social links, and office-map carousel |
 | `pages/confidentialite.blade.php` | Privacy policy |
 | `pages/conditions.blade.php` | Website terms |
 
@@ -405,7 +443,7 @@ Production hosting should still enable `intl`.
 | Component | Purpose |
 |---|---|
 | `navbar` | Sticky desktop and mobile navigation |
-| `footer` | Brand, navigation, contact, and legal links |
+| `footer` | Brand, contact details, social profiles, legal links, and professional-services disclaimer |
 | `button-primary` | Coral conversion button with animated arrow |
 | `button-secondary` | Neutral outlined button |
 | `section-title` | Eyebrow, title, description, and animated coral rule |
@@ -454,10 +492,12 @@ Animations are intentionally implemented without a large JavaScript library.
 
 - Sticky-navbar scrolled state.
 - Accessible mobile-menu toggling.
+- Body-scroll locking, Escape handling, focus restoration, and desktop-reset behavior for the mobile menu.
 - Intersection Observer reveal logic.
 - Automatic stagger delays for child cards.
 - One-time statistic count-up animations.
 - Very small desktop-only hero parallax.
+- Accessible office-map carousel state, tabs, previous/next controls, and arrow-key navigation.
 - A fallback that reveals everything if Intersection Observer is unavailable.
 
 ### Accessibility and performance
@@ -480,8 +520,10 @@ Every public page receives:
 
 Additional structured data:
 
-- Global LocalBusiness and AccountingService JSON-LD.
+- Global LocalBusiness and ProfessionalService JSON-LD.
 - Article JSON-LD on article detail pages.
+
+The JSON-LD context key is assembled safely to avoid collision with Laravel 12's Blade `@context` directive.
 
 Metadata priority:
 
@@ -511,6 +553,18 @@ Admin/marketer reviews it in Filament
 Status changes to "contacted" or "closed"
 ```
 
+### Contact presentation and office maps
+
+`config/mccg.php` is the single source of truth for public business details. The contact page and footer read from this configuration rather than duplicating addresses or social links in Blade.
+
+The office section contains three slides:
+
+- Marrakech, with the complete main-office address.
+- Casablanca.
+- Dubai.
+
+Each slide has an embedded Google Map and an external “Ouvrir dans Google Maps” link. Empty map values render a professional fallback instead of causing a view error or loading an empty recursive iframe.
+
 ## 14. Initial seeded content
 
 `DatabaseSeeder` currently creates or updates:
@@ -523,6 +577,17 @@ Status changes to "contacted" or "closed"
 
 Seeder operations use `updateOrCreate` for the initial managed content, allowing the seeder to be rerun without duplicating those records.
 
+The seeded services are:
+
+1. Tenue comptable.
+2. Conseil fiscal.
+3. Audit interne & revue comptable.
+4. Gestion sociale & RH.
+5. Conseil juridique et administratif.
+6. Accompagnement des entreprises.
+
+Migration `2026_07_05_000000_update_regulated_wording.php` updates existing SEO and service records to the current professional wording. Its rollback intentionally does not restore superseded marketing claims.
+
 ## 15. Environment configuration
 
 Important variables:
@@ -534,6 +599,23 @@ APP_DEBUG=true
 APP_URL=http://127.0.0.1:8000
 APP_TIMEZONE=Africa/Casablanca
 APP_LOCALE=fr
+
+MCCG_PHONE="05 24 43 83 70"
+MCCG_EMAIL="majd.chraibi@gmail.com"
+MCCG_ADDRESS="92, Bd Zerktouni, Appt 6, 2ème étage, Guéliz, Marrakech"
+MCCG_OTHER_OFFICES="Casablanca, Dubai"
+MCCG_HOURS="Lun - Ven: 9h00 - 18h00"
+MCCG_LINKEDIN_URL="https://www.linkedin.com/in/majdchraibi"
+MCCG_INSTAGRAM_URL="https://www.instagram.com/mccg.consulting"
+MCCG_ANALYTICS_PROVIDER=""
+MCCG_GA_ID=""
+MCCG_PLAUSIBLE_DOMAIN=""
+MCCG_MARRAKECH_MAPS_URL="..."
+MCCG_MARRAKECH_MAPS_EMBED_URL="..."
+MCCG_CASABLANCA_MAPS_URL="..."
+MCCG_CASABLANCA_MAPS_EMBED_URL="..."
+MCCG_DUBAI_MAPS_URL="..."
+MCCG_DUBAI_MAPS_EMBED_URL="..."
 
 DB_CONNECTION=mysql
 DB_HOST=localhost
@@ -550,6 +632,8 @@ CONTACT_NOTIFICATION_EMAIL=admin@mccg.ma
 ```
 
 Never commit a real production `.env` file or reuse the example administrator password in production.
+
+Analytics is disabled when `MCCG_ANALYTICS_PROVIDER` is empty. Set it to `google` with `MCCG_GA_ID`, or to `plausible` with `MCCG_PLAUSIBLE_DOMAIN`. Google tracking loads only after visitor consent; Plausible renders without the Google cookie notice.
 
 ## 16. Local installation
 
@@ -621,6 +705,8 @@ composer test
 
 Avoid `php artisan migrate:fresh` on any database containing real data because it drops all tables.
 
+For an existing installation, normal deployments do not require `db:seed`; the migration updates the current seeded wording. Run `db:seed` only when initializing the application or intentionally restoring the default managed content.
+
 ## 18. Testing status
 
 The feature suite currently verifies:
@@ -629,6 +715,7 @@ The feature suite currently verifies:
 - Published service and article detail pages are accessible.
 - Dynamic SEO and canonical markup are present.
 - Article JSON-LD is present.
+- Global JSON-LD uses LocalBusiness and ProfessionalService and renders a valid schema context.
 - The sitemap contains active services and published articles.
 - A valid contact form creates a `new` database message.
 - Both contact mailables are queued for their correct recipients.
@@ -638,6 +725,14 @@ The feature suite currently verifies:
 - Administrators can access user management while marketers receive HTTP 403.
 - Marketer permissions match the resource matrix.
 - Administrators cannot delete their own account.
+- Shared mobile navigation and footer markup render correctly.
+- Real contact details and social links appear on the contact page and footer.
+- Contact and footer rendering remain safe when map URLs are absent.
+- Marrakech, Casablanca, and Dubai map slides render with accessible carousel markup.
+- Main marketing pages do not contain the prohibited regulated-status claims covered by the compliance test.
+- Current compliant service names, SEO positioning, structured data, and footer disclaimer are present.
+- Casablanca renders a safe fallback and only Marrakech/Dubai render map iframes by default.
+- Empty, incomplete, Google, and Plausible analytics configurations render the correct scripts and consent UI.
 
 Run:
 
@@ -645,7 +740,7 @@ Run:
 composer test
 ```
 
-Current result: **11 tests passing, 64 assertions**.
+Current result: **21 tests passing, 158 assertions**.
 
 ## 19. Deployment
 
@@ -659,12 +754,14 @@ The main production steps are:
 
 ```bash
 composer install --no-dev --optimize-autoloader
-php artisan key:generate --force
+php artisan optimize:clear
 php artisan migrate --force
-php artisan db:seed --force
-php artisan storage:link
+php artisan storage:link # first deployment only
+php artisan queue:restart
 php artisan optimize
 ```
+
+Run `php artisan key:generate --force` only during the first installation. Replacing an established production `APP_KEY` invalidates encrypted application data and sessions. Likewise, `php artisan db:seed --force` is intended for first installation or deliberate default-content restoration, not every deployment.
 
 The `public/build` directory must be present in production. It can be built locally with `npm run build` when Node.js is unavailable on cPanel.
 
@@ -676,8 +773,9 @@ The current application is production-oriented but the following enhancements re
 2. Add image conversions and responsive WebP/AVIF variants for uploaded article images.
 3. Add automated database and uploaded-file backups on the production host.
 4. Add analytics and consent management after selecting the required provider.
-5. Replace placeholder phone and address information with final MCCG business details before launch.
+5. Obtain and configure the verified Casablanca address and Google Maps location; the public slide remains safely disabled until then.
 6. Configure and monitor a persistent production queue worker for contact mail delivery.
+7. Obtain a final legal review of the public wording and disclaimer before launch; the application avoids unverified regulated-status claims but repository documentation is not legal advice.
 
 ## 21. Ownership of editable content
 
@@ -693,5 +791,7 @@ The current application is production-oriented but the following enhancements re
 | About-page body copy | No | Yes |
 | Privacy and terms body copy | No | Yes |
 | Header, footer, and global CTAs | No | Yes |
+| Business contact details and map URLs | No | `config/mccg.php` / `.env` |
+| Compliance disclaimer | No | Yes |
 
 This distinction is important when planning future marketer autonomy.

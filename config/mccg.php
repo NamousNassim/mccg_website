@@ -18,6 +18,9 @@ return [
     'instagram_url' => env('MCCG_INSTAGRAM_URL', 'https://www.instagram.com/mccg.consulting'),
     'google_maps_url' => env('MCCG_GOOGLE_MAPS_URL'),
     'google_maps_embed_url' => env('MCCG_GOOGLE_MAPS_EMBED_URL'),
+    'analytics_provider' => strtolower((string) env('MCCG_ANALYTICS_PROVIDER', '')),
+    'ga_id' => env('MCCG_GA_ID'),
+    'plausible_domain' => env('MCCG_PLAUSIBLE_DOMAIN'),
     'office_locations' => [
         [
             'city' => 'Marrakech',
@@ -27,9 +30,9 @@ return [
         ],
         [
             'city' => 'Casablanca',
-            'address' => 'Bureau MCCG Casablanca',
-            'maps_url' => env('MCCG_CASABLANCA_MAPS_URL', 'https://www.google.com/maps/place/25°10\'38.4%22N+55°16\'24.3%22E/@25.177329,55.273418,17z/data=!4m4!3m3!8m2!3d25.1773294!4d55.273418?hl=en-GB&entry=ttu&g_ep=EgoyMDI2MDYyOS4wIKXMDSoASAFQAw%3D%3D'),
-            'embed_url' => env('MCCG_CASABLANCA_MAPS_EMBED_URL', 'https://www.google.com/maps?q=25.1773294,55.273418&z=15&output=embed'),
+            'address' => 'Adresse à confirmer',
+            'maps_url' => env('MCCG_CASABLANCA_MAPS_URL'),
+            'embed_url' => env('MCCG_CASABLANCA_MAPS_EMBED_URL'),
         ],
         [
             'city' => 'Dubai',

@@ -93,7 +93,7 @@
                             @if($office['embed_url'])
                                 <iframe class="h-full min-h-72 w-full sm:min-h-80 lg:min-h-[460px]" src="{{ $office['embed_url'] }}" title="Carte du bureau MCCG à {{ $office['city'] }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
                             @else
-                                <div class="grid h-full min-h-80 place-items-center p-8 text-center lg:min-h-[460px]"><div><span class="mx-auto grid size-16 place-items-center rounded-full bg-white text-coral shadow-sm">⌖</span><p class="mt-5 font-heading text-xl font-bold text-charcoal">MCCG {{ $office['city'] }}</p><p class="mt-3 text-slate-600">{{ $office['address'] }}</p></div></div>
+                                <div class="grid h-full min-h-80 place-items-center p-8 text-center lg:min-h-[460px]" data-map-fallback="{{ $office['city'] }}"><div><span class="mx-auto grid size-16 place-items-center rounded-full bg-white text-coral shadow-sm">⌖</span><p class="mt-5 font-heading text-xl font-bold text-charcoal">Bureau {{ $office['city'] }}</p><p class="mt-3 text-slate-600">{{ $office['address'] }}</p></div></div>
                             @endif
                         </div>
                     </article>

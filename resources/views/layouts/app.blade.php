@@ -4,6 +4,9 @@
     $description = $seoDescription ?? ($pageSeo?->meta_description ?? 'MCCG accompagne les entreprises au Maroc en tenue comptable, fiscalité, gestion sociale, conseil juridique et accompagnement administratif.');
     $ogImage = $seoImage ?? ($pageSeo?->og_image ? asset('storage/'.$pageSeo->og_image) : asset('images/logo.png'));
     $schemaContext = '@'.'context';
+    $analyticsProvider = config('mccg.analytics_provider');
+    $gaId = config('mccg.ga_id');
+    $plausibleDomain = config('mccg.plausible_domain');
 @endphp
 <!DOCTYPE html>
 <html lang="fr" class="scroll-smooth">
@@ -43,6 +46,38 @@
         'priceRange' => '$$',
     ], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) !!}</script>
     @stack('structured-data')
+    @if($analyticsProvider === 'google' && $gaId)
+        <script data-mccg-google-bootstrap>
+            (() => {
+                const measurementId = @json($gaId);
+
+                window.mccgLoadGoogleAnalytics = () => {
+                    if (document.querySelector('script[data-mccg-google-analytics]')) return;
+
+                    const tag = document.createElement('script');
+                    tag.async = true;
+                    tag.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
+                    tag.dataset.mccgGoogleAnalytics = 'true';
+                    document.head.appendChild(tag);
+
+                    window.dataLayer = window.dataLayer || [];
+                    window.gtag = function () { window.dataLayer.push(arguments); };
+                    window.gtag('js', new Date());
+                    window.gtag('config', measurementId);
+                };
+
+                try {
+                    if (window.localStorage.getItem('mccg_analytics_consent') === 'accepted') {
+                        window.mccgLoadGoogleAnalytics();
+                    }
+                } catch (_) {
+                    // Tracking remains disabled if browser storage is unavailable.
+                }
+            })();
+        </script>
+    @elseif($analyticsProvider === 'plausible' && $plausibleDomain)
+        <script defer data-domain="{{ $plausibleDomain }}" src="https://plausible.io/js/script.js" data-mccg-plausible></script>
+    @endif
 </head>
 <body class="bg-surface text-slate-700 antialiased">
     <x-navbar />
@@ -50,5 +85,9 @@
     <main>@yield('content')</main>
 
     <x-footer />
+
+    @if($analyticsProvider === 'google' && $gaId)
+        <x-cookie-notice />
+    @endif
 </body>
 </html>
