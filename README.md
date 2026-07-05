@@ -76,6 +76,8 @@ The Casablanca map is deliberately disabled until verified coordinates are avail
 
 No frontend animation framework is installed. Public animations use CSS transforms, opacity, and the native Intersection Observer API.
 
+Composer is configured with `config.platform.php=8.3.0`. The committed lock file is therefore resolved for the PHP 8.3 runtime available on cPanel rather than the newer local development runtime.
+
 ## 3. Main directory structure
 
 ```text
