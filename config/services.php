@@ -19,7 +19,12 @@ return [
     ],
 
     'resend' => [
-        'key' => env('RESEND_API_KEY'),
+        'key' => env('resend_api'),
+        'contact' => [
+            'to' => env('CONTACT_TO_EMAIL'),
+            'from_email' => env('CONTACT_FROM_EMAIL', 'noreply@mc-cg.com'),
+            'from_name' => env('CONTACT_FROM_NAME', 'MCCG Website'),
+        ],
     ],
 
     'ses' => [

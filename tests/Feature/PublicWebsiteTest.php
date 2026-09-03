@@ -2,16 +2,13 @@
 
 namespace Tests\Feature;
 
-use App\Mail\ContactMessageReceivedMail;
-use App\Mail\NewContactMessageMail;
 use App\Models\Article;
 use App\Models\ContactMessage;
 use App\Models\Service;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Mail;
-use RuntimeException;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class PublicWebsiteTest extends TestCase
@@ -100,7 +97,11 @@ class PublicWebsiteTest extends TestCase
 
     public function test_contact_form_stores_a_message(): void
     {
-        Mail::fake();
+        config()->set('services.resend.key', 're_test_secret');
+        config()->set('services.resend.contact.to', 'contact@mc-cg.com');
+        config()->set('services.resend.contact.from_email', 'noreply@mc-cg.com');
+        config()->set('services.resend.contact.from_name', 'MCCG Website');
+        Http::fake(['api.resend.com/*' => Http::response(['id' => 'email_123'], 200)]);
 
         $this->post(route('contact.store'), [
             'full_name' => 'Samira Alaoui', 'email' => 'samira@example.com',
@@ -109,12 +110,26 @@ class PublicWebsiteTest extends TestCase
         ])->assertSessionHas('success');
 
         $this->assertDatabaseHas('contact_messages', ['email' => 'samira@example.com', 'status' => 'new']);
-        Mail::assertQueued(NewContactMessageMail::class, fn (NewContactMessageMail $mail) => $mail->hasTo(config('mail.contact_notification')));
-        Mail::assertQueued(ContactMessageReceivedMail::class, fn (ContactMessageReceivedMail $mail) => $mail->hasTo('samira@example.com'));
+        Http::assertSent(function ($request) {
+            return $request->url() === 'https://api.resend.com/emails'
+                && $request->hasHeader('Authorization', 'Bearer re_test_secret')
+                && $request['from'] === 'MCCG Website <noreply@mc-cg.com>'
+                && $request['to'] === ['contact@mc-cg.com']
+                && $request['reply_to'] === 'samira@example.com'
+                && str_contains($request['html'], 'Samira Alaoui');
+        });
+    }
 
-        $contactMessage = ContactMessage::where('email', 'samira@example.com')->firstOrFail();
-        $this->assertStringContainsString('Samira Alaoui', (new NewContactMessageMail($contactMessage))->render());
-        $this->assertStringContainsString('Nous vous confirmons', (new ContactMessageReceivedMail($contactMessage))->render());
+    public function test_contact_form_validates_required_fields_and_email(): void
+    {
+        Http::fake();
+        $this->post(route('contact.store'), [])->assertSessionHasErrors(['full_name', 'email', 'message']);
+        $this->post(route('contact.store'), [
+            'full_name' => 'Test Client',
+            'email' => 'not-an-email',
+            'message' => 'Un message suffisamment long.',
+        ])->assertSessionHasErrors(['email']);
+        Http::assertNothingSent();
     }
 
     public function test_contact_page_displays_configured_business_details_and_structured_data(): void
@@ -239,17 +254,21 @@ class PublicWebsiteTest extends TestCase
         $this->assertTrue(User::first()->canAccessPanel(filament()->getPanel('admin')));
     }
 
-    public function test_contact_is_saved_even_when_notifications_cannot_be_queued(): void
+    public function test_contact_reports_a_safe_error_when_resend_fails(): void
     {
-        Mail::shouldReceive('to')->twice()->andThrow(new RuntimeException('Service mail indisponible'));
+        config()->set('services.resend.key', 're_private_key');
+        config()->set('services.resend.contact.to', 'contact@mc-cg.com');
+        Http::fake(['api.resend.com/*' => Http::response(['message' => 'Provider diagnostics'], 500)]);
 
         $this->post(route('contact.store'), [
             'full_name' => 'Youssef Amrani',
             'email' => 'youssef@example.com',
             'message' => 'Je souhaite être accompagné pour la création de mon entreprise.',
-        ])->assertSessionHas('success');
+        ])->assertSessionHas('error')->assertSessionHasInput('email', 'youssef@example.com');
 
         $this->assertDatabaseHas('contact_messages', ['email' => 'youssef@example.com', 'status' => 'new']);
+        $this->assertStringNotContainsString('re_private_key', session('error'));
+        $this->assertStringNotContainsString('Provider diagnostics', session('error'));
     }
 
     public function test_admin_can_open_all_management_sections(): void

@@ -1,5 +1,20 @@
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+document.querySelectorAll('[data-contact-form]').forEach((form) => {
+    form.addEventListener('submit', (event) => {
+        const button = form.querySelector('[data-contact-submit]');
+        if (button?.disabled) {
+            event.preventDefault();
+            return;
+        }
+        if (!form.checkValidity()) return;
+
+        button.disabled = true;
+        button.setAttribute('aria-busy', 'true');
+        button.querySelector('[data-contact-submit-label]').textContent = 'Envoi en cours…';
+    });
+});
+
 document.documentElement.classList.add('motion-ready');
 
 const navbar = document.querySelector('[data-navbar]');

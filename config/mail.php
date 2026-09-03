@@ -115,6 +115,4 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
-    'contact_notification' => env('CONTACT_NOTIFICATION_EMAIL') ?: env('MAIL_FROM_ADDRESS', 'contact@mccg.ma'),
-
 ];

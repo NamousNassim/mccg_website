@@ -14,7 +14,7 @@ Route::get('/services/{service:slug}', [ServiceController::class, 'show'])->name
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/articles/{article:slug}', [ArticleController::class, 'show'])->name('articles.show');
 Route::get('/contact', [ContactController::class, 'create'])->name('contact');
-Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:5,1')->name('contact.store');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 Route::get('/confidentialite', [HomeController::class, 'privacy'])->name('confidentialite');
 Route::get('/conditions', [HomeController::class, 'terms'])->name('conditions');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
