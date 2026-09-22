@@ -7,6 +7,7 @@
     $analyticsProvider = config('mccg.analytics_provider');
     $gaId = config('mccg.ga_id');
     $plausibleDomain = config('mccg.plausible_domain');
+    $canonicalUrl = app(\App\Support\CanonicalUrl::class)->current(request());
 @endphp
 <!DOCTYPE html>
 <html lang="fr" class="scroll-smooth">
@@ -17,12 +18,12 @@
     <title>{{ $title }}</title>
     <meta name="description" content="{{ $description }}">
     @isset($seoKeywords)<meta name="keywords" content="{{ $seoKeywords }}">@endisset
-    <link rel="canonical" href="{{ url()->current() }}">
+    <link rel="canonical" href="{{ $canonicalUrl }}">
     <meta property="og:locale" content="fr_MA">
     <meta property="og:type" content="{{ $ogType ?? 'website' }}">
     <meta property="og:title" content="{{ $title }}">
     <meta property="og:description" content="{{ $description }}">
-    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:url" content="{{ $canonicalUrl }}">
     <meta property="og:site_name" content="MCCG">
     <meta property="og:image" content="{{ $ogImage }}">
     <meta name="twitter:card" content="summary_large_image">
@@ -31,7 +32,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script type="application/ld+json">{!! json_encode([
         $schemaContext => 'https://schema.org', '@type' => ['LocalBusiness', 'ProfessionalService'],
-        'name' => 'MCCG', 'url' => url('/'), 'logo' => asset('images/logo.png'),
+        'name' => 'MCCG', 'url' => \App\Support\CanonicalUrl::ORIGIN.'/', 'logo' => asset('images/logo.png'),
         'description' => 'MCCG est un cabinet de conseil comptable, fiscal, social et administratif basé à Marrakech, accompagnant les entreprises et entrepreneurs au Maroc.',
         'address' => [
             '@type' => 'PostalAddress',

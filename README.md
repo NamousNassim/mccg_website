@@ -42,7 +42,7 @@ The application is currently functional and includes:
 | SEO | Database-managed page metadata, canonical and Open Graph tags, valid LocalBusiness/ProfessionalService and Article JSON-LD |
 | Legal positioning | Public wording uses accounting-support, fiscal, social, administrative, internal-audit, and business-advisory terminology |
 | Automated verification | 21 PHPUnit tests passing with 158 assertions |
-| Production domain | `https://www.mc-cg.com` |
+| Production domain | `https://mc-cg.com` |
 
 ### 1.2 Current MCCG business information
 
@@ -752,7 +752,7 @@ The recommended split cPanel layout keeps the Git repository in `/home/USERNAME/
 
 `public/build` is intentionally tracked in Git so a production pull includes the compiled Vite assets without requiring Node.js on cPanel.
 
-The production domain is `https://www.mc-cg.com`; the production `.env` must therefore use `APP_URL=https://www.mc-cg.com`.
+The production domain is `https://mc-cg.com`; the production `.env` must therefore use `APP_URL=https://mc-cg.com`.
 
 The complete production procedure is documented in [DEPLOYMENT_CPANEL.md](DEPLOYMENT_CPANEL.md).
 

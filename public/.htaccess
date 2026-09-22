@@ -5,6 +5,20 @@
 
     RewriteEngine On
 
+    # Remove the front controller from legacy public URLs while preserving
+    # the remaining path and query string.
+    RewriteCond %{THE_REQUEST} \s/+index\.php(?:[/?\s]) [NC]
+    RewriteRule ^index\.php(?:/(.*))?$ https://mc-cg.com/$1 [R=301,L,NE]
+
+    # Enforce the single canonical host before Laravel handles the request.
+    RewriteCond %{HTTP_HOST} !^mc-cg\.com$ [NC]
+    RewriteRule ^ https://mc-cg.com%{REQUEST_URI} [R=301,L,NE]
+
+    # Enforce HTTPS without looping behind cPanel's Nginx/Apache proxy.
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP:X-Forwarded-Proto} !^https$ [NC]
+    RewriteRule ^ https://mc-cg.com%{REQUEST_URI} [R=301,L,NE]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

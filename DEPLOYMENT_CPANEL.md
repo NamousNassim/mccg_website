@@ -31,13 +31,13 @@ Pour conserver le code Laravel hors de la racine web, utiliser cette structure :
 
 Le `git pull` s’exécute dans `/home/USERNAME/mccg_backend`. Le dossier `public/build` est volontairement suivi dans Git afin que les assets compilés soient disponibles même lorsque Node.js n’est pas installé sur cPanel.
 
-Configurer le document root du domaine `www.mc-cg.com` sur `/home/USERNAME/public_html/mccg`. Dans ce cas, `APP_URL` reste `https://www.mc-cg.com` sans suffixe `/mccg`.
+Configurer le document root du domaine `mc-cg.com` sur `/home/USERNAME/public_html/mccg`. Dans ce cas, `APP_URL` reste `https://mc-cg.com` sans suffixe `/mccg`.
 
 ## Première mise en ligne
 
 1. Créer la base et l’utilisateur MySQL depuis cPanel, puis leur attribuer les privilèges requis.
 2. Copier `.env.example` vers `.env` et configurer `APP_URL`, `DB_*`, SMTP, `CONTACT_NOTIFICATION_EMAIL` et les identifiants administrateur.
-3. Utiliser `APP_URL=https://www.mc-cg.com`, `APP_ENV=production` et `APP_DEBUG=false`.
+3. Utiliser `APP_URL=https://mc-cg.com`, `APP_ENV=production` et `APP_DEBUG=false`.
 4. Cloner le dépôt dans `/home/USERNAME/mccg_backend`.
 5. Exécuter depuis le terminal cPanel :
 
@@ -190,3 +190,24 @@ Tester périodiquement une restauration sur un environnement séparé. Une sauve
 - Laisser les URL Casablanca vides tant que l’adresse et les coordonnées ne sont pas confirmées.
 
 Le sitemap est généré dynamiquement : tout article publié ou service actif apparaît automatiquement, sans tâche cron dédiée.
+
+## Origine canonique, redirections et indexation
+
+L’unique origine publique est `https://mc-cg.com`. Le fichier `public/.htaccess` applique avant Laravel les redirections permanentes suivantes en conservant le chemin et la query string :
+
+- HTTP vers HTTPS ;
+- `www.mc-cg.com` vers `mc-cg.com` ;
+- `/index.php/chemin` vers `/chemin`.
+
+Les règles tiennent compte de `X-Forwarded-Proto` afin d’éviter une boucle lorsque Nginx termine HTTPS devant Apache sur cPanel. Après chaque déploiement, vérifier que `.htaccess` a bien été synchronisé dans la racine web, puis exécuter :
+
+```bash
+curl -sS -o /dev/null -D - 'http://mc-cg.com/?source=test'
+curl -sS -o /dev/null -D - 'https://www.mc-cg.com/articles/test?source=test'
+curl -sS -o /dev/null -D - 'http://www.mc-cg.com/articles/test?source=test'
+curl -sS -o /dev/null -D - 'https://mc-cg.com/index.php/articles/test?source=test'
+```
+
+Chaque réponse doit être un `301` avec une en-tête `Location` sur `https://mc-cg.com`, le même chemin utile, et la même query string. Si l’hébergeur configure Nginx sans passage par Apache, `.htaccess` sera ignoré : demander alors au support cPanel de reproduire ces trois règles dans le virtual host Nginx, sans ajouter une seconde redirection contradictoire dans Laravel.
+
+Le dépôt ne contient ni CAPTCHA, ni challenge anti-bot, ni configuration Cloudflare/WAF. Si une protection externe est activée, vérifier dans l’interface de l’hébergeur ou du CDN que les requêtes `GET` et `HEAD` vers `/`, `/robots.txt`, `/sitemap.xml`, `/articles/*` et `/services/*` ne reçoivent pas de challenge. Ne pas désactiver globalement les protections de `/admin` ou du formulaire de contact. Préférer, lorsqu’elle existe, la reconnaissance de robots vérifiés du fournisseur à une règle fondée uniquement sur le texte du User-Agent.

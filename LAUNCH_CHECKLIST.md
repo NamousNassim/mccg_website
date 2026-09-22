@@ -8,7 +8,7 @@ Responsable : ____________________
 
 - [ ] `APP_ENV=production`.
 - [ ] `APP_DEBUG=false`.
-- [ ] `APP_URL=https://www.mc-cg.com`.
+- [ ] `APP_URL=https://mc-cg.com`.
 - [ ] `APP_KEY` de production présent, sauvegardé et non régénéré pendant un déploiement courant.
 - [ ] Identifiants de base de données de production renseignés et testés.
 - [ ] `.env` absent de Git et sauvegardé de manière sécurisée hors de la racine web.
@@ -62,7 +62,7 @@ Responsable : ____________________
 - [ ] Si Google est utilisé : bannière de consentement testée avec acceptation et refus.
 - [ ] Si Plausible est utilisé : domaine suivi correct et script détecté.
 - [ ] Propriété Google Search Console validée.
-- [ ] `https://www.mc-cg.com/sitemap.xml` soumis dans Google Search Console.
+- [ ] `https://mc-cg.com/sitemap.xml` soumis dans Google Search Console.
 
 ## Sauvegardes et reprise
 

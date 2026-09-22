@@ -3,9 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\Article;
-use App\Models\ContactMessage;
 use App\Models\Service;
 use App\Models\User;
+use App\Support\CanonicalUrl;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Http;
@@ -91,8 +91,8 @@ class PublicWebsiteTest extends TestCase
             ->assertSee('application/ld+json', false)
             ->assertSee('"@context":"https://schema.org"', false);
         $this->get('/sitemap.xml')
-            ->assertSee(route('services.show', $service), false)
-            ->assertSee(route('articles.show', $article), false);
+            ->assertSee(app(CanonicalUrl::class)->route('services.show', $service), false)
+            ->assertSee(app(CanonicalUrl::class)->route('articles.show', $article), false);
     }
 
     public function test_contact_form_stores_a_message(): void
@@ -204,13 +204,13 @@ class PublicWebsiteTest extends TestCase
     public function test_plausible_analytics_requires_provider_and_domain(): void
     {
         config()->set('mccg.analytics_provider', 'plausible');
-        config()->set('mccg.plausible_domain', 'www.mc-cg.com');
+        config()->set('mccg.plausible_domain', 'mc-cg.com');
         config()->set('mccg.ga_id', 'G-WRONG');
 
         $this->get(route('accueil'))
             ->assertOk()
             ->assertSee('src="https://plausible.io/js/script.js"', false)
-            ->assertSee('data-domain="www.mc-cg.com"', false)
+            ->assertSee('data-domain="mc-cg.com"', false)
             ->assertSee('data-mccg-plausible', false)
             ->assertDontSee('googletagmanager.com', false)
             ->assertDontSee('data-cookie-notice', false);
