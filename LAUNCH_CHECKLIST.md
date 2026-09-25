@@ -12,6 +12,7 @@ Responsable : ____________________
 - [ ] `APP_KEY` de production présent, sauvegardé et non régénéré pendant un déploiement courant.
 - [ ] Identifiants de base de données de production renseignés et testés.
 - [ ] `.env` absent de Git et sauvegardé de manière sécurisée hors de la racine web.
+- [ ] `RECAPTCHA_SITE_KEY` et `RECAPTCHA_SECRET_KEY` renseignées avec des clés reCAPTCHA v2 autorisant le domaine de production.
 
 ## E-mails et file d’attente
 
@@ -41,6 +42,7 @@ Responsable : ____________________
 - [ ] `/sitemap.xml` accessible et valide.
 - [ ] `/robots.txt` accessible.
 - [ ] Formulaire de contact soumis avec succès sur la production.
+- [ ] Soumission refusée lorsque la case reCAPTCHA n’est pas cochée.
 - [ ] Téléphone, e-mail, adresse et réseaux sociaux vérifiés.
 - [ ] Carte Marrakech vérifiée.
 - [ ] Carte Dubai vérifiée.

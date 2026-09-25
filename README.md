@@ -631,9 +631,14 @@ FILESYSTEM_DISK=public
 ADMIN_EMAIL=admin@mccg.ma
 ADMIN_PASSWORD=replace-this-password
 CONTACT_NOTIFICATION_EMAIL=admin@mccg.ma
+
+RECAPTCHA_SITE_KEY=your-public-site-key
+RECAPTCHA_SECRET_KEY=your-private-secret-key
 ```
 
 Never commit a real production `.env` file or reuse the example administrator password in production.
+
+The contact form uses the reCAPTCHA v2 checkbox. Both reCAPTCHA values are required: the site key is rendered in the browser, while the secret key is used only by the server to verify each submission with Google.
 
 Analytics is disabled when `MCCG_ANALYTICS_PROVIDER` is empty. Set it to `google` with `MCCG_GA_ID`, or to `plausible` with `MCCG_PLAUSIBLE_DOMAIN`. Google tracking loads only after visitor consent; Plausible renders without the Google cookie notice.
 

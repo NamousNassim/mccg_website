@@ -1,4 +1,5 @@
 @props(['services'])
+@php($recaptchaSiteKey = config('services.recaptcha.site_key'))
 <div class="reveal min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-900/[.03] sm:p-8 lg:p-10" data-reveal>
     @if(session('success'))<div class="mb-7 rounded-md border-l-4 border-emerald-500 bg-emerald-50 p-4 text-sm text-emerald-800">{{ session('success') }}</div>@endif
     @if(session('error'))<div class="mb-7 rounded-md border-l-4 border-coral bg-red-50 p-4 text-sm text-red-800">{{ session('error') }}</div>@endif
@@ -10,6 +11,23 @@
         <div><label class="form-label" for="company">Société</label><input class="form-input" id="company" name="company" value="{{ old('company') }}" autocomplete="organization">@error('company')<p class="form-error">{{ $message }}</p>@enderror</div>
         <div><label class="form-label" for="service">Service souhaité</label><select class="form-input" id="service" name="service"><option value="">À préciser</option>@foreach($services as $item)<option @selected(old('service', request('service')) === $item->title)>{{ $item->title }}</option>@endforeach<option @selected(old('service') === 'Autre')>Autre</option></select>@error('service')<p class="form-error">{{ $message }}</p>@enderror</div>
         <div class="sm:col-span-2"><label class="form-label" for="message">Message *</label><textarea class="form-input min-h-36" id="message" name="message" required>{{ old('message') }}</textarea>@error('message')<p class="form-error">{{ $message }}</p>@enderror</div>
-        <div class="sm:col-span-2"><x-button-primary type="submit" class="w-full sm:w-auto" data-contact-submit><span data-contact-submit-label>Envoyer la demande</span></x-button-primary><p class="mt-4 text-xs leading-5 text-slate-400">En envoyant ce formulaire, vous acceptez notre <a class="underline hover:text-coral" href="{{ route('confidentialite') }}">politique de confidentialité</a>.</p></div>
+        <div class="min-w-0 sm:col-span-2">
+            <span class="form-label">Vérification anti-robot *</span>
+            @if($recaptchaSiteKey)
+                <div class="max-w-full overflow-x-auto"><div class="g-recaptcha" data-sitekey="{{ $recaptchaSiteKey }}"></div></div>
+            @else
+                <p class="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">Le formulaire est temporairement indisponible.</p>
+            @endif
+            @error('g-recaptcha-response')<p class="form-error">{{ $message }}</p>@enderror
+        </div>
+        <div class="sm:col-span-2"><x-button-primary type="submit" class="w-full sm:w-auto" data-contact-submit :disabled="! $recaptchaSiteKey"><span data-contact-submit-label>Envoyer la demande</span></x-button-primary><p class="mt-4 text-xs leading-5 text-slate-400">En envoyant ce formulaire, vous acceptez notre <a class="underline hover:text-coral" href="{{ route('confidentialite') }}">politique de confidentialité</a>.</p></div>
     </form>
 </div>
+
+@if($recaptchaSiteKey)
+    @once
+        @push('scripts')
+            <script src="https://www.google.com/recaptcha/api.js?hl=fr" async defer></script>
+        @endpush
+    @endonce
+@endif

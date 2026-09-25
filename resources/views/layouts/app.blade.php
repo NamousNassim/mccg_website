@@ -90,5 +90,6 @@
     @if($analyticsProvider === 'google' && $gaId)
         <x-cookie-notice />
     @endif
+    @stack('scripts')
 </body>
 </html>

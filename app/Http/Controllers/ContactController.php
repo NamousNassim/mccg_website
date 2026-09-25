@@ -26,7 +26,7 @@ class ContactController extends Controller
         [$firstName, $lastName] = array_pad(explode(' ', trim($data['full_name']), 2), 2, '');
         $data['first_name'] = $firstName;
         $data['last_name'] = $lastName;
-        unset($data['full_name']);
+        unset($data['full_name'], $data['g-recaptcha-response']);
 
         $contactMessage = ContactMessage::create($data);
 

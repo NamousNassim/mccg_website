@@ -36,7 +36,7 @@ Configurer le document root du domaine `mc-cg.com` sur `/home/USERNAME/public_ht
 ## Première mise en ligne
 
 1. Créer la base et l’utilisateur MySQL depuis cPanel, puis leur attribuer les privilèges requis.
-2. Copier `.env.example` vers `.env` et configurer `APP_URL`, `DB_*`, SMTP, `CONTACT_NOTIFICATION_EMAIL` et les identifiants administrateur.
+2. Copier `.env.example` vers `.env` et configurer `APP_URL`, `DB_*`, SMTP, les clés `RECAPTCHA_*`, `CONTACT_NOTIFICATION_EMAIL` et les identifiants administrateur.
 3. Utiliser `APP_URL=https://mc-cg.com`, `APP_ENV=production` et `APP_DEBUG=false`.
 4. Cloner le dépôt dans `/home/USERNAME/mccg_backend`.
 5. Exécuter depuis le terminal cPanel :
