@@ -18,8 +18,6 @@ class PublicWebsiteTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        config()->set('services.recaptcha.site_key', 'recaptcha_test_site_key');
-        config()->set('services.recaptcha.secret_key', 'recaptcha_test_secret_key');
         $this->seed();
     }
 
@@ -104,24 +102,20 @@ class PublicWebsiteTest extends TestCase
         config()->set('services.resend.contact.from_email', 'noreply@mc-cg.com');
         config()->set('services.resend.contact.from_name', 'MCCG Website');
         Http::fake([
-            'www.google.com/recaptcha/api/siteverify' => Http::response(['success' => true], 200),
             'api.resend.com/*' => Http::response(['id' => 'email_123'], 200),
         ]);
 
-        $this->post(route('contact.store'), [
+        $response = $this->post(route('contact.store'), [
             'full_name' => 'Samira Alaoui', 'email' => 'samira@example.com',
             'phone' => '+212600000000', 'company' => 'Atlas SARL', 'service' => 'Conseil fiscal',
             'message' => 'Je souhaite échanger au sujet de notre organisation fiscale.',
-            'g-recaptcha-response' => 'valid_recaptcha_token',
-        ])->assertSessionHas('success');
+        ]);
+
+        $response
+            ->assertSessionHas('success')
+            ->assertSessionHas('google_ads_conversion', true);
 
         $this->assertDatabaseHas('contact_messages', ['email' => 'samira@example.com', 'status' => 'new']);
-        Http::assertSent(function ($request) {
-            return $request->url() === 'https://www.google.com/recaptcha/api/siteverify'
-                && $request['secret'] === 'recaptcha_test_secret_key'
-                && $request['response'] === 'valid_recaptcha_token'
-                && $request['remoteip'] === '127.0.0.1';
-        });
         Http::assertSent(function ($request) {
             return $request->url() === 'https://api.resend.com/emails'
                 && $request->hasHeader('Authorization', 'Bearer re_test_secret')
@@ -135,7 +129,7 @@ class PublicWebsiteTest extends TestCase
     public function test_contact_form_validates_required_fields_and_email(): void
     {
         Http::fake();
-        $this->post(route('contact.store'), [])->assertSessionHasErrors(['full_name', 'email', 'message', 'g-recaptcha-response']);
+        $this->post(route('contact.store'), [])->assertSessionHasErrors(['full_name', 'email', 'message']);
         $this->post(route('contact.store'), [
             'full_name' => 'Test Client',
             'email' => 'not-an-email',
@@ -144,34 +138,25 @@ class PublicWebsiteTest extends TestCase
         Http::assertNothingSent();
     }
 
-    public function test_contact_page_renders_recaptcha_without_exposing_the_secret(): void
+    public function test_contact_page_does_not_render_recaptcha(): void
     {
         $this->get(route('contact'))
             ->assertOk()
-            ->assertSee('class="g-recaptcha"', false)
-            ->assertSee('data-sitekey="recaptcha_test_site_key"', false)
-            ->assertSee('https://www.google.com/recaptcha/api.js?hl=fr', false)
-            ->assertDontSee('recaptcha_test_secret_key');
+            ->assertDontSee('g-recaptcha', false)
+            ->assertDontSee('google.com/recaptcha', false)
+            ->assertDontSee('Vérification anti-robot');
     }
 
-    public function test_contact_form_rejects_an_invalid_recaptcha_response(): void
+    public function test_contact_form_is_rate_limited(): void
     {
-        Http::fake([
-            'www.google.com/recaptcha/api/siteverify' => Http::response([
-                'success' => false,
-                'error-codes' => ['invalid-input-response'],
-            ], 200),
-        ]);
+        Http::fake();
 
-        $this->post(route('contact.store'), [
-            'full_name' => 'Test Client',
-            'email' => 'client@example.com',
-            'message' => 'Un message suffisamment long.',
-            'g-recaptcha-response' => 'invalid_recaptcha_token',
-        ])->assertSessionHasErrors(['g-recaptcha-response']);
+        for ($attempt = 0; $attempt < 5; $attempt++) {
+            $this->post(route('contact.store'), [])->assertRedirect();
+        }
 
-        $this->assertDatabaseMissing('contact_messages', ['email' => 'client@example.com']);
-        Http::assertSentCount(1);
+        $this->post(route('contact.store'), [])->assertTooManyRequests();
+        Http::assertNothingSent();
     }
 
     public function test_contact_page_displays_configured_business_details_and_structured_data(): void
@@ -202,7 +187,8 @@ class PublicWebsiteTest extends TestCase
     public function test_analytics_are_not_rendered_without_configuration(): void
     {
         config()->set('mccg.analytics_provider');
-        config()->set('mccg.ga_id');
+        config()->set('mccg.google_tag_id');
+        config()->set('mccg.google_ads_conversion_send_to');
         config()->set('mccg.plausible_domain');
 
         $this->get(route('accueil'))
@@ -212,17 +198,17 @@ class PublicWebsiteTest extends TestCase
             ->assertDontSee('data-cookie-notice', false);
     }
 
-    public function test_google_analytics_and_cookie_notice_require_provider_and_id(): void
+    public function test_google_tag_and_cookie_notice_require_provider_and_id(): void
     {
         config()->set('mccg.analytics_provider', 'google');
-        config()->set('mccg.ga_id', 'G-MCCG123456');
+        config()->set('mccg.google_tag_id', 'AW-987825813');
         config()->set('mccg.plausible_domain', 'wrong.example');
 
         $this->get(route('accueil'))
             ->assertOk()
-            ->assertSee('googletagmanager.com/gtag/js', false)
-            ->assertSee('G-MCCG123456', false)
+            ->assertSee('src="https://www.googletagmanager.com/gtag/js?id=AW-987825813"', false)
             ->assertSee('data-mccg-google-bootstrap', false)
+            ->assertSee("window.gtag('consent', 'default'", false)
             ->assertSee('data-cookie-notice', false)
             ->assertDontSee('plausible.io/js/script.js', false);
     }
@@ -230,7 +216,7 @@ class PublicWebsiteTest extends TestCase
     public function test_incomplete_analytics_configuration_renders_nothing(): void
     {
         config()->set('mccg.analytics_provider', 'google');
-        config()->set('mccg.ga_id');
+        config()->set('mccg.google_tag_id');
 
         $this->get(route('accueil'))
             ->assertDontSee('googletagmanager.com', false)
@@ -247,7 +233,7 @@ class PublicWebsiteTest extends TestCase
     {
         config()->set('mccg.analytics_provider', 'plausible');
         config()->set('mccg.plausible_domain', 'mc-cg.com');
-        config()->set('mccg.ga_id', 'G-WRONG');
+        config()->set('mccg.google_tag_id', 'G-WRONG');
 
         $this->get(route('accueil'))
             ->assertOk()
@@ -256,6 +242,24 @@ class PublicWebsiteTest extends TestCase
             ->assertSee('data-mccg-plausible', false)
             ->assertDontSee('googletagmanager.com', false)
             ->assertDontSee('data-cookie-notice', false);
+    }
+
+    public function test_google_ads_conversion_is_rendered_only_for_a_successful_lead(): void
+    {
+        config()->set('mccg.analytics_provider', 'google');
+        config()->set('mccg.google_tag_id', 'AW-987825813');
+        config()->set('mccg.google_ads_conversion_send_to', 'AW-987825813/g_upCMH2m7sYEJWNhNcD');
+
+        $this->get(route('contact'))
+            ->assertOk()
+            ->assertDontSee('data-mccg-google-ads-conversion', false);
+
+        $this->withSession(['google_ads_conversion' => true])
+            ->get(route('contact'))
+            ->assertOk()
+            ->assertSee('data-mccg-google-ads-conversion', false)
+            ->assertSee('AW-987825813\/g_upCMH2m7sYEJWNhNcD', false)
+            ->assertSee("window.gtag('event', 'conversion'", false);
     }
 
     public function test_contact_page_and_footer_work_without_google_maps_urls(): void
@@ -301,7 +305,6 @@ class PublicWebsiteTest extends TestCase
         config()->set('services.resend.key', 're_private_key');
         config()->set('services.resend.contact.to', 'contact@mc-cg.com');
         Http::fake([
-            'www.google.com/recaptcha/api/siteverify' => Http::response(['success' => true], 200),
             'api.resend.com/*' => Http::response(['message' => 'Provider diagnostics'], 500),
         ]);
 
@@ -309,7 +312,6 @@ class PublicWebsiteTest extends TestCase
             'full_name' => 'Youssef Amrani',
             'email' => 'youssef@example.com',
             'message' => 'Je souhaite être accompagné pour la création de mon entreprise.',
-            'g-recaptcha-response' => 'valid_recaptcha_token',
         ])->assertSessionHas('error')->assertSessionHasInput('email', 'youssef@example.com');
 
         $this->assertDatabaseHas('contact_messages', ['email' => 'youssef@example.com', 'status' => 'new']);

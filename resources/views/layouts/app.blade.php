@@ -5,7 +5,8 @@
     $ogImage = $seoImage ?? ($pageSeo?->og_image ? asset('storage/'.$pageSeo->og_image) : asset('images/logo.png'));
     $schemaContext = '@'.'context';
     $analyticsProvider = config('mccg.analytics_provider');
-    $gaId = config('mccg.ga_id');
+    $googleTagId = config('mccg.google_tag_id');
+    $googleAdsConversionSendTo = config('mccg.google_ads_conversion_send_to');
     $plausibleDomain = config('mccg.plausible_domain');
     $canonicalUrl = app(\App\Support\CanonicalUrl::class)->current(request());
 @endphp
@@ -47,35 +48,67 @@
         'priceRange' => '$$',
     ], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) !!}</script>
     @stack('structured-data')
-    @if($analyticsProvider === 'google' && $gaId)
+    @if($analyticsProvider === 'google' && $googleTagId)
         <script data-mccg-google-bootstrap>
             (() => {
-                const measurementId = @json($gaId);
-
-                window.mccgLoadGoogleAnalytics = () => {
-                    if (document.querySelector('script[data-mccg-google-analytics]')) return;
-
-                    const tag = document.createElement('script');
-                    tag.async = true;
-                    tag.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
-                    tag.dataset.mccgGoogleAnalytics = 'true';
-                    document.head.appendChild(tag);
-
-                    window.dataLayer = window.dataLayer || [];
-                    window.gtag = function () { window.dataLayer.push(arguments); };
-                    window.gtag('js', new Date());
-                    window.gtag('config', measurementId);
+                const measurementId = @json($googleTagId);
+                const consentState = {
+                    granted: {
+                        ad_storage: 'granted',
+                        ad_user_data: 'granted',
+                        ad_personalization: 'granted',
+                        analytics_storage: 'granted',
+                    },
+                    denied: {
+                        ad_storage: 'denied',
+                        ad_user_data: 'denied',
+                        ad_personalization: 'denied',
+                        analytics_storage: 'denied',
+                    },
                 };
 
+                window.dataLayer = window.dataLayer || [];
+                window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+                window.gtag('consent', 'default', consentState.denied);
+
+                let savedConsent = null;
                 try {
-                    if (window.localStorage.getItem('mccg_analytics_consent') === 'accepted') {
-                        window.mccgLoadGoogleAnalytics();
-                    }
+                    savedConsent = window.localStorage.getItem('mccg_analytics_consent');
                 } catch (_) {
-                    // Tracking remains disabled if browser storage is unavailable.
+                    // Consent remains denied if browser storage is unavailable.
                 }
+
+                window.mccgGoogleConsent = savedConsent;
+                if (savedConsent === 'accepted') {
+                    window.gtag('consent', 'update', consentState.granted);
+                }
+
+                window.mccgSetGoogleConsent = (status) => {
+                    window.mccgGoogleConsent = status;
+                    window.gtag('consent', 'update', status === 'accepted' ? consentState.granted : consentState.denied);
+                };
+
+                window.gtag('js', new Date());
+                window.gtag('config', measurementId);
             })();
         </script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ urlencode($googleTagId) }}" data-mccg-google-tag></script>
+        @if(session('google_ads_conversion') && $googleAdsConversionSendTo)
+            <script data-mccg-google-ads-conversion>
+                (() => {
+                    let sent = false;
+                    window.mccgTrackGoogleAdsConversion = () => {
+                        if (sent || window.mccgGoogleConsent !== 'accepted') return;
+
+                        window.gtag('event', 'conversion', {
+                            send_to: @json($googleAdsConversionSendTo),
+                        });
+                        sent = true;
+                    };
+                    window.mccgTrackGoogleAdsConversion();
+                })();
+            </script>
+        @endif
     @elseif($analyticsProvider === 'plausible' && $plausibleDomain)
         <script defer data-domain="{{ $plausibleDomain }}" src="https://plausible.io/js/script.js" data-mccg-plausible></script>
     @endif
@@ -87,7 +120,7 @@
 
     <x-footer />
 
-    @if($analyticsProvider === 'google' && $gaId)
+    @if($analyticsProvider === 'google' && $googleTagId)
         <x-cookie-notice />
     @endif
     @stack('scripts')

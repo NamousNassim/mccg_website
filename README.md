@@ -609,8 +609,9 @@ MCCG_OTHER_OFFICES="Casablanca, Dubai"
 MCCG_HOURS="Lun - Ven: 9h00 - 18h00"
 MCCG_LINKEDIN_URL="https://www.linkedin.com/in/majdchraibi"
 MCCG_INSTAGRAM_URL="https://www.instagram.com/mccg.consulting"
-MCCG_ANALYTICS_PROVIDER=""
-MCCG_GA_ID=""
+MCCG_ANALYTICS_PROVIDER=google
+MCCG_GOOGLE_TAG_ID=AW-987825813
+MCCG_GOOGLE_ADS_CONVERSION_SEND_TO=AW-987825813/g_upCMH2m7sYEJWNhNcD
 MCCG_PLAUSIBLE_DOMAIN=""
 MCCG_MARRAKECH_MAPS_URL="..."
 MCCG_MARRAKECH_MAPS_EMBED_URL="..."
@@ -632,15 +633,11 @@ ADMIN_EMAIL=admin@mccg.ma
 ADMIN_PASSWORD=replace-this-password
 CONTACT_NOTIFICATION_EMAIL=admin@mccg.ma
 
-RECAPTCHA_SITE_KEY=your-public-site-key
-RECAPTCHA_SECRET_KEY=your-private-secret-key
 ```
 
 Never commit a real production `.env` file or reuse the example administrator password in production.
 
-The contact form uses the reCAPTCHA v2 checkbox. Both reCAPTCHA values are required: the site key is rendered in the browser, while the secret key is used only by the server to verify each submission with Google.
-
-Analytics is disabled when `MCCG_ANALYTICS_PROVIDER` is empty. Set it to `google` with `MCCG_GA_ID`, or to `plausible` with `MCCG_PLAUSIBLE_DOMAIN`. Google tracking loads only after visitor consent; Plausible renders without the Google cookie notice.
+Set `MCCG_ANALYTICS_PROVIDER` to `google` with `MCCG_GOOGLE_TAG_ID` and `MCCG_GOOGLE_ADS_CONVERSION_SEND_TO`, or to `plausible` with `MCCG_PLAUSIBLE_DOMAIN`. The Google tag uses Consent Mode with advertising and analytics storage denied by default. A Google Ads lead conversion is sent only after a successful contact request and visitor consent. Plausible renders without the Google cookie notice.
 
 ## 16. Local installation
 
@@ -740,6 +737,7 @@ The feature suite currently verifies:
 - Current compliant service names, SEO positioning, structured data, and footer disclaimer are present.
 - Casablanca renders a safe fallback and only Marrakech/Dubai render map iframes by default.
 - Empty, incomplete, Google, and Plausible analytics configurations render the correct scripts and consent UI.
+- The Google Ads lead event renders only after a successful contact submission.
 
 Run:
 
@@ -747,7 +745,7 @@ Run:
 composer test
 ```
 
-Current result: **21 tests passing, 158 assertions**.
+Current result: **28 tests passing, 260 assertions**.
 
 ## 19. Deployment
 
@@ -783,7 +781,7 @@ The current application is production-oriented but the following enhancements re
 1. Move legal-page body content into editable page records if marketers must manage it.
 2. Add image conversions and responsive WebP/AVIF variants for uploaded article images.
 3. Add automated database and uploaded-file backups on the production host.
-4. Add analytics and consent management after selecting the required provider.
+4. Validate the Google tag and lead conversion in Google Ads diagnostics after production deployment.
 5. Obtain and configure the verified Casablanca address and Google Maps location; the public slide remains safely disabled until then.
 6. Configure and monitor a persistent production queue worker for contact mail delivery.
 7. Obtain a final legal review of the public wording and disclaimer before launch; the application avoids unverified regulated-status claims but repository documentation is not legal advice.

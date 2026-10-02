@@ -18,8 +18,9 @@ return [
     'instagram_url' => env('MCCG_INSTAGRAM_URL', 'https://www.instagram.com/mccg.consulting'),
     'google_maps_url' => env('MCCG_GOOGLE_MAPS_URL'),
     'google_maps_embed_url' => env('MCCG_GOOGLE_MAPS_EMBED_URL'),
-    'analytics_provider' => strtolower((string) env('MCCG_ANALYTICS_PROVIDER', '')),
-    'ga_id' => env('MCCG_GA_ID'),
+    'analytics_provider' => strtolower((string) env('MCCG_ANALYTICS_PROVIDER', 'google')),
+    'google_tag_id' => env('MCCG_GOOGLE_TAG_ID', env('MCCG_GA_ID', 'AW-987825813')),
+    'google_ads_conversion_send_to' => env('MCCG_GOOGLE_ADS_CONVERSION_SEND_TO', 'AW-987825813/g_upCMH2m7sYEJWNhNcD'),
     'plausible_domain' => env('MCCG_PLAUSIBLE_DOMAIN'),
     'office_locations' => [
         [

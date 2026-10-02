@@ -12,7 +12,6 @@ Responsable : ____________________
 - [ ] `APP_KEY` de production présent, sauvegardé et non régénéré pendant un déploiement courant.
 - [ ] Identifiants de base de données de production renseignés et testés.
 - [ ] `.env` absent de Git et sauvegardé de manière sécurisée hors de la racine web.
-- [ ] `RECAPTCHA_SITE_KEY` et `RECAPTCHA_SECRET_KEY` renseignées avec des clés reCAPTCHA v2 autorisant le domaine de production.
 
 ## E-mails et file d’attente
 
@@ -42,7 +41,7 @@ Responsable : ____________________
 - [ ] `/sitemap.xml` accessible et valide.
 - [ ] `/robots.txt` accessible.
 - [ ] Formulaire de contact soumis avec succès sur la production.
-- [ ] Soumission refusée lorsque la case reCAPTCHA n’est pas cochée.
+- [ ] Limitation à cinq soumissions par minute vérifiée.
 - [ ] Téléphone, e-mail, adresse et réseaux sociaux vérifiés.
 - [ ] Carte Marrakech vérifiée.
 - [ ] Carte Dubai vérifiée.
@@ -60,8 +59,9 @@ Responsable : ____________________
 
 ## Analytics et référencement
 
-- [ ] Fournisseur analytics volontairement laissé vide, ou configuration Google/Plausible validée.
-- [ ] Si Google est utilisé : bannière de consentement testée avec acceptation et refus.
+- [ ] Balise Google Ads `AW-987825813` détectée sur les pages publiques.
+- [ ] Bannière de consentement testée avec acceptation et refus.
+- [ ] Conversion de demande de contact vérifiée dans Google Ads avec une soumission de test réussie.
 - [ ] Si Plausible est utilisé : domaine suivi correct et script détecté.
 - [ ] Propriété Google Search Console validée.
 - [ ] `https://mc-cg.com/sitemap.xml` soumis dans Google Search Console.

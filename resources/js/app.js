@@ -192,7 +192,8 @@ if (cookieNotice) {
         } catch (_) {
             // Consent still applies for the current page when storage is unavailable.
         }
-        window.mccgLoadGoogleAnalytics?.();
+        window.mccgSetGoogleConsent?.('accepted');
+        window.mccgTrackGoogleAdsConversion?.();
         hideCookieNotice();
     });
 
@@ -202,6 +203,7 @@ if (cookieNotice) {
         } catch (_) {
             // Tracking stays disabled even when the preference cannot be persisted.
         }
+        window.mccgSetGoogleConsent?.('declined');
         hideCookieNotice();
     });
 }

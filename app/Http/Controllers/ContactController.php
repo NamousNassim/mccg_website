@@ -26,7 +26,7 @@ class ContactController extends Controller
         [$firstName, $lastName] = array_pad(explode(' ', trim($data['full_name']), 2), 2, '');
         $data['first_name'] = $firstName;
         $data['last_name'] = $lastName;
-        unset($data['full_name'], $data['g-recaptcha-response']);
+        unset($data['full_name']);
 
         $contactMessage = ContactMessage::create($data);
 
@@ -47,6 +47,6 @@ class ContactController extends Controller
         return back()->with(
             'success',
             'Votre demande a bien été envoyée. Notre équipe vous contactera prochainement.'
-        );
+        )->with('google_ads_conversion', true);
     }
 }
