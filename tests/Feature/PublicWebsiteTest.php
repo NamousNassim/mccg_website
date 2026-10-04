@@ -147,6 +147,16 @@ class PublicWebsiteTest extends TestCase
             ->assertDontSee('Vérification anti-robot');
     }
 
+    public function test_privacy_page_uses_the_dedicated_privacy_email(): void
+    {
+        config()->set('mccg.privacy_email', 'contact@mc-cg.com');
+
+        $this->get(route('confidentialite'))
+            ->assertOk()
+            ->assertSee('href="mailto:contact@mc-cg.com"', false)
+            ->assertSee('contact@mc-cg.com');
+    }
+
     public function test_contact_form_is_rate_limited(): void
     {
         Http::fake();
@@ -165,7 +175,7 @@ class PublicWebsiteTest extends TestCase
 
         $response->assertOk()
             ->assertSee('05 24 43 83 70')
-            ->assertSee('majd.chraibi@gmail.com')
+            ->assertSee('contact@mc-cg.com')
             ->assertSee('92, Bd Zerktouni, Appt 6, 2ème étage, Guéliz, Marrakech')
             ->assertSee('Casablanca, Dubai')
             ->assertSee('Ouvrir dans Google Maps')
@@ -177,7 +187,7 @@ class PublicWebsiteTest extends TestCase
             ->assertDontSee('Carte du bureau MCCG à Casablanca')
             ->assertSee('data-office-carousel', false)
             ->assertSee('"telephone":"05 24 43 83 70"', false)
-            ->assertSee('"email":"majd.chraibi@gmail.com"', false)
+            ->assertSee('"email":"contact@mc-cg.com"', false)
             ->assertSee('"streetAddress":"92, Bd Zerktouni, Appt 6, 2ème étage"', false)
             ->assertSee('"addressLocality":"Marrakech"', false);
 
@@ -278,7 +288,7 @@ class PublicWebsiteTest extends TestCase
             ->assertSee('MCCG Marrakech')
             ->assertSee('Ouvrir dans Google Maps')
             ->assertSee('05 24 43 83 70')
-            ->assertSee('majd.chraibi@gmail.com')
+            ->assertSee('contact@mc-cg.com')
             ->assertSee('Autres bureaux');
     }
 
@@ -287,7 +297,7 @@ class PublicWebsiteTest extends TestCase
         $footer = Blade::render('<x-footer />');
 
         $this->assertStringContainsString('05 24 43 83 70', $footer);
-        $this->assertStringContainsString('majd.chraibi@gmail.com', $footer);
+        $this->assertStringContainsString('contact@mc-cg.com', $footer);
         $this->assertStringContainsString('92, Bd Zerktouni, Appt 6, 2ème étage, Guéliz, Marrakech', $footer);
         $this->assertStringContainsString('Casablanca, Dubai', $footer);
         $this->assertStringContainsString('https://www.linkedin.com/in/majdchraibi', $footer);

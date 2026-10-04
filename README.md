@@ -49,7 +49,7 @@ The application is currently functional and includes:
 | Detail | Value |
 |---|---|
 | Telephone | `05 24 43 83 70` |
-| Email | `majd.chraibi@gmail.com` |
+| Email | `contact@mc-cg.com` |
 | Main office | 92, Bd Zerktouni, Appt 6, 2ème étage, Guéliz, Marrakech |
 | Other offices | Casablanca and Dubai |
 | Opening hours | Monday–Friday, 09:00–18:00 |
@@ -603,7 +603,7 @@ APP_TIMEZONE=Africa/Casablanca
 APP_LOCALE=fr
 
 MCCG_PHONE="05 24 43 83 70"
-MCCG_EMAIL="majd.chraibi@gmail.com"
+MCCG_EMAIL="contact@mc-cg.com"
 MCCG_ADDRESS="92, Bd Zerktouni, Appt 6, 2ème étage, Guéliz, Marrakech"
 MCCG_OTHER_OFFICES="Casablanca, Dubai"
 MCCG_HOURS="Lun - Ven: 9h00 - 18h00"

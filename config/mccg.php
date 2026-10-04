@@ -7,7 +7,8 @@ $otherOffices = array_values(array_filter(array_map(
 
 return [
     'phone' => env('MCCG_PHONE', '05 24 43 83 70'),
-    'email' => env('MCCG_EMAIL', 'majd.chraibi@gmail.com'),
+    'email' => env('MCCG_EMAIL', 'contact@mc-cg.com'),
+    'privacy_email' => env('MCCG_PRIVACY_EMAIL', 'contact@mc-cg.com'),
     'street_address' => env('MCCG_STREET_ADDRESS', '92, Bd Zerktouni, Appt 6, 2ème étage'),
     'address' => env('MCCG_ADDRESS', '92, Bd Zerktouni, Appt 6, 2ème étage, Guéliz, Marrakech'),
     'city' => env('MCCG_CITY', 'Marrakech'),
