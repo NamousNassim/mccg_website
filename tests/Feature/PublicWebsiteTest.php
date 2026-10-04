@@ -312,7 +312,10 @@ class PublicWebsiteTest extends TestCase
             'full_name' => 'Youssef Amrani',
             'email' => 'youssef@example.com',
             'message' => 'Je souhaite être accompagné pour la création de mon entreprise.',
-        ])->assertSessionHas('error')->assertSessionHasInput('email', 'youssef@example.com');
+        ])
+            ->assertSessionHas('error')
+            ->assertSessionHasInput('email', 'youssef@example.com')
+            ->assertSessionMissing('google_ads_conversion');
 
         $this->assertDatabaseHas('contact_messages', ['email' => 'youssef@example.com', 'status' => 'new']);
         $this->assertStringNotContainsString('re_private_key', session('error'));
