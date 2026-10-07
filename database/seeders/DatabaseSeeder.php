@@ -30,6 +30,10 @@ class DatabaseSeeder extends Seeder
             ['Contact', 'contact', 'Contacter MCCG — Parlons de vos enjeux', 'Échangez avec nos consultants et obtenez un accompagnement adapté aux enjeux de votre entreprise.'],
             ['Confidentialité', 'confidentialite', 'Politique de confidentialité — MCCG', 'Politique de confidentialité et traitement des données personnelles par MCCG.'],
             ['Conditions', 'conditions', 'Conditions d’utilisation — MCCG', 'Conditions d’utilisation du site internet MCCG.'],
+            ["Marrakech","marrakech",'Cabinet comptable et fiscal à Marrakech | MCCG',"MCCG accompagne les entreprises et entrepreneurs à Marrakech en comptabilité, fiscalité, gestion sociale, conseil juridique et accompagnement administratif."],
+            ["Casablanca","casablanca",'Cabinet comptable et fiscal à Casablanca | MCCG','MCCG accompagne les entreprises et entrepreneurs à Casablanca en comptabilité, fiscalité, gestion sociale, conseil juridique et accompagnement administratif.'],
+            ["Dubai","dubai",'Conseil comptable et accompagnement à Dubaï | MCCG','MCCG accompagne les entrepreneurs et entreprises à Dubaï dans leurs besoins comptables, fiscaux, administratifs et leur développement entre le Maroc et les Émirats.']
+
         ] as [$name, $slug, $title, $description]) {
             PageSeo::updateOrCreate(['slug' => $slug], ['page_name' => $name, 'meta_title' => $title, 'meta_description' => $description]);
         }

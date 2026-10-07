@@ -6,6 +6,10 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MarrakechController;
+use App\Http\Controllers\CasablancaController;
+use App\Http\Controllers\DubaiController;
+
 
 Route::get('/', [HomeController::class, 'index'])->name('accueil');
 Route::get('/a-propos', [HomeController::class, 'about'])->name('a-propos');
@@ -19,3 +23,8 @@ Route::get('/confidentialite', [HomeController::class, 'privacy'])->name('confid
 Route::get('/conditions', [HomeController::class, 'terms'])->name('conditions');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
+
+Route::get("/marrakech", [MarrakechController::class,"index"])->name("marrakech");
+Route::get("/dubai", [DubaiController::class,"index"])->name("dubai");
+Route::get("/casablanca", [CasablancaController::class,"index"])->name("casablanca");
+
