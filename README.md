@@ -611,6 +611,7 @@ MCCG_LINKEDIN_URL="https://www.linkedin.com/in/majdchraibi"
 MCCG_INSTAGRAM_URL="https://www.instagram.com/mccg.consulting"
 MCCG_ANALYTICS_PROVIDER=google
 MCCG_GOOGLE_TAG_ID=AW-987825813
+MCCG_GOOGLE_TAG_MANAGER_ID=GTM-N64QTKK
 MCCG_GOOGLE_ADS_CONVERSION_SEND_TO=AW-987825813/g_upCMH2m7sYEJWNhNcD
 MCCG_PLAUSIBLE_DOMAIN=""
 MCCG_MARRAKECH_MAPS_URL="..."
@@ -637,7 +638,7 @@ CONTACT_NOTIFICATION_EMAIL=admin@mccg.ma
 
 Never commit a real production `.env` file or reuse the example administrator password in production.
 
-Set `MCCG_ANALYTICS_PROVIDER` to `google` with `MCCG_GOOGLE_TAG_ID` and `MCCG_GOOGLE_ADS_CONVERSION_SEND_TO`, or to `plausible` with `MCCG_PLAUSIBLE_DOMAIN`. The Google tag uses Consent Mode with advertising and analytics storage denied by default. A Google Ads lead conversion is sent only after a successful contact request and visitor consent. Plausible renders without the Google cookie notice.
+Set `MCCG_ANALYTICS_PROVIDER` to `google` with `MCCG_GOOGLE_TAG_ID`, `MCCG_GOOGLE_TAG_MANAGER_ID`, and `MCCG_GOOGLE_ADS_CONVERSION_SEND_TO`, or to `plausible` with `MCCG_PLAUSIBLE_DOMAIN`. The Google tag and Tag Manager container use Consent Mode with advertising and analytics storage denied by default. A Google Ads lead conversion is sent only after a successful contact request and visitor consent. Plausible renders without the Google cookie notice.
 
 ## 16. Local installation
 

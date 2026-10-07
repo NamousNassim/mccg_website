@@ -191,13 +191,14 @@ class PublicWebsiteTest extends TestCase
             ->assertSee('"streetAddress":"92, Bd Zerktouni, Appt 6, 2ème étage"', false)
             ->assertSee('"addressLocality":"Marrakech"', false);
 
-        $this->assertSame(2, substr_count($response->getContent(), '<iframe'));
+        $this->assertSame(2, substr_count($response->getContent(), 'title="Carte du bureau'));
     }
 
     public function test_analytics_are_not_rendered_without_configuration(): void
     {
         config()->set('mccg.analytics_provider');
         config()->set('mccg.google_tag_id');
+        config()->set('mccg.google_tag_manager_id');
         config()->set('mccg.google_ads_conversion_send_to');
         config()->set('mccg.plausible_domain');
 
@@ -212,11 +213,14 @@ class PublicWebsiteTest extends TestCase
     {
         config()->set('mccg.analytics_provider', 'google');
         config()->set('mccg.google_tag_id', 'AW-987825813');
+        config()->set('mccg.google_tag_manager_id', 'GTM-N64QTKK');
         config()->set('mccg.plausible_domain', 'wrong.example');
 
         $this->get(route('accueil'))
             ->assertOk()
             ->assertSee('src="https://www.googletagmanager.com/gtag/js?id=AW-987825813"', false)
+            ->assertSee("(window,document,'script','dataLayer',\"GTM-N64QTKK\")", false)
+            ->assertSee('src="https://www.googletagmanager.com/ns.html?id=GTM-N64QTKK"', false)
             ->assertSee('data-mccg-google-bootstrap', false)
             ->assertSee("window.gtag('consent', 'default'", false)
             ->assertSee('data-cookie-notice', false)

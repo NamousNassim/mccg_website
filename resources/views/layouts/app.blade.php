@@ -6,6 +6,7 @@
     $schemaContext = '@'.'context';
     $analyticsProvider = config('mccg.analytics_provider');
     $googleTagId = config('mccg.google_tag_id');
+    $googleTagManagerId = config('mccg.google_tag_manager_id');
     $googleAdsConversionSendTo = config('mccg.google_ads_conversion_send_to');
     $plausibleDomain = config('mccg.plausible_domain');
     $canonicalUrl = app(\App\Support\CanonicalUrl::class)->current(request());
@@ -92,6 +93,17 @@
                 window.gtag('config', measurementId);
             })();
         </script>
+        @if($googleTagManagerId)
+            <!-- Google Tag Manager -->
+            <script data-mccg-google-tag-manager>
+                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+                })(window,document,'script','dataLayer',@json($googleTagManagerId));
+            </script>
+            <!-- End Google Tag Manager -->
+        @endif
         <script async src="https://www.googletagmanager.com/gtag/js?id={{ urlencode($googleTagId) }}" data-mccg-google-tag></script>
         @if(session('google_ads_conversion') && $googleAdsConversionSendTo)
             <script data-mccg-google-ads-conversion>
@@ -114,6 +126,12 @@
     @endif
 </head>
 <body class="bg-surface text-slate-700 antialiased">
+    @if($analyticsProvider === 'google' && $googleTagId && $googleTagManagerId)
+        <!-- Google Tag Manager (noscript) -->
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ urlencode($googleTagManagerId) }}"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <!-- End Google Tag Manager (noscript) -->
+    @endif
     <x-navbar />
 
     <main>@yield('content')</main>
