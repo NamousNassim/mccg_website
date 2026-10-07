@@ -13,6 +13,7 @@ class SitemapController extends Controller
     public function __invoke(CanonicalUrl $canonicalUrl): Response
     {
         $pages = collect([
+
             'accueil',
             'a-propos',
             'services.index',
@@ -20,6 +21,9 @@ class SitemapController extends Controller
             'contact',
             'confidentialite',
             'conditions',
+            'casablanca',
+            'dubai',
+            'marrakech'
         ])->map(fn (string $routeName): array => [
             'loc' => $canonicalUrl->route($routeName),
             'lastmod' => null,
