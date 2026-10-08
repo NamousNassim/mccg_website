@@ -38,7 +38,7 @@
                 <div class="absolute -left-5 -top-5 size-24 rounded-xl border border-coral/20" aria-hidden="true"></div>
                 <div class="relative overflow-hidden rounded-2xl border border-slate-200 bg-surface shadow-xl shadow-slate-900/[.08]">
                     <img
-                        src="{{ asset('images/marrakech.webp') }}"
+                        src="{{ asset('images/marrakech.png') }}"
                         alt="La Koutoubia et la place Jemaa el-Fna à Marrakech"
                         class="hero-parallax aspect-[4/3] max-h-[430px] w-full object-cover"
                         width="1260"

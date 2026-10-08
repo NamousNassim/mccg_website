@@ -90,6 +90,16 @@
             }
             .office-menu:hover .office-menu__chevron { transform: rotate(180deg); }
         }
+        .mobile-office-menu summary { list-style: none; }
+        .mobile-office-menu summary::-webkit-details-marker { display: none; }
+        .mobile-office-menu__chevron {
+            display: block;
+            width: 1rem;
+            height: 1rem;
+            flex: 0 0 1rem;
+            transition: transform .2s ease;
+        }
+        .mobile-office-menu[open] .mobile-office-menu__chevron { transform: rotate(180deg); }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -166,12 +176,19 @@
         <div class="container-site flex max-h-[calc(100dvh-4rem)] flex-col gap-1 overflow-y-auto py-4 font-heading font-semibold text-charcoal sm:max-h-[calc(100dvh-5rem)]">
             <a class="flex min-h-11 items-center rounded-md px-2 hover:bg-surface hover:text-coral" href="{{ route('accueil') }}">Accueil</a><a class="flex min-h-11 items-center rounded-md px-2 hover:bg-surface hover:text-coral" href="{{ route('a-propos') }}">À propos</a>
             <a class="flex min-h-11 items-center rounded-md px-2 hover:bg-surface hover:text-coral" href="{{ route('services.index') }}">Services</a><a class="flex min-h-11 items-center rounded-md px-2 hover:bg-surface hover:text-coral" href="{{ route('articles.index') }}">Articles</a>
-            <p class="px-2 pb-1 pt-3 text-[10px] uppercase tracking-[.18em] text-slate-400">Nos sites</p>
-            <div class="grid grid-cols-3 gap-2 px-2 pb-2">
-                <a class="rounded-md border border-slate-200 px-2 py-2 text-center text-xs hover:border-coral hover:text-coral" href="{{ route('marrakech') }}">Marrakech</a>
-                <a class="rounded-md border border-slate-200 px-2 py-2 text-center text-xs hover:border-coral hover:text-coral" href="{{ route('casablanca') }}">Casablanca</a>
-                <a class="rounded-md border border-slate-200 px-2 py-2 text-center text-xs hover:border-coral hover:text-coral" href="{{ route('dubai') }}">Dubaï</a>
-            </div>
+            <details class="mobile-office-menu">
+                <summary class="flex min-h-11 cursor-pointer items-center justify-between rounded-md px-2 hover:bg-surface hover:text-coral">
+                    <span>Nos sites</span>
+                    <svg class="mobile-office-menu__chevron size-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                        <path d="m4 6 4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </summary>
+                <div class="mb-2 ml-2 border-l border-slate-200 pl-3" style="display: grid; row-gap: 3px; margin-top: 6px;">
+                    <a class="flex min-h-10 items-center rounded-md px-3 text-sm hover:bg-surface hover:text-coral {{ request()->routeIs('marrakech') ? 'bg-surface text-coral' : '' }}" style="padding-top: 3px; padding-bottom: 3px;" href="{{ route('marrakech') }}">Marrakech</a>
+                    <a class="flex min-h-10 items-center rounded-md px-3 text-sm hover:bg-surface hover:text-coral {{ request()->routeIs('casablanca') ? 'bg-surface text-coral' : '' }}" style="padding-top: 3px; padding-bottom: 3px;" href="{{ route('casablanca') }}">Casablanca</a>
+                    <a class="flex min-h-10 items-center rounded-md px-3 text-sm hover:bg-surface hover:text-coral {{ request()->routeIs('dubai') ? 'bg-surface text-coral' : '' }}" style="padding-top: 3px; padding-bottom: 3px;" href="{{ route('dubai') }}">Dubaï</a>
+                </div>
+            </details>
             <a class="flex min-h-11 items-center rounded-md px-2 hover:bg-surface hover:text-coral" href="{{ route('contact') }}">Contact</a><x-button-primary :href="route('contact', ['objet' => 'consultation'])" class="mt-3 w-full text-center">Nous consulter</x-button-primary>
         </div>
     </nav>
